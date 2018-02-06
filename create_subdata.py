@@ -214,9 +214,9 @@ def class_id_set():
         pickle.dump(id2text, f)
 
 # img_sep("home/goda/im2ingr/data/images/")
-process_outline()
-process_ingredients()
-combine_outline_ingredients()
+# process_outline()
+# process_ingredients()
+# combine_outline_ingredients()
 # ontrogy()
 # data_dict()
-# class_id_set()
+class_id_set()

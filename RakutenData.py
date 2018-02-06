@@ -47,10 +47,10 @@ class RakutenData(data.Dataset):
             self.ids = pickle.load(f)
 
         self.maxInst = 20
-        with open(os.path.join(data_path,'ingredients_dict.p'),'rb') as f:
-            self.ingr_dic = pickle.load(f)
-        with open(os.path.join(data_path,'recipe_class.p'),'rb') as f:
-            self.recipe_class = pickle.load(f)
+        with open(os.path.join(data_path,'dataset_dict.p'),'rb') as f:
+            self.dataset_dict = pickle.load(f)
+        # with open(os.path.join(data_path,'recipe_class.p'),'rb') as f:
+        #     self.recipe_class = pickle.load(f)
 
         self.transform = transforms.Compose([
             transforms.Scale(256), # rescale the image keeping the original aspect ratio
@@ -75,7 +75,6 @@ class RakutenData(data.Dataset):
             l = []
         if len(l) is 0:
             l = ['*']
-            target = -1
         for item in l:
             if item in self.ingr_id:
                 try:
@@ -96,7 +95,7 @@ class RakutenData(data.Dataset):
         if self.transform is not None:
             img = self.transform(img)
 
-        rec_class = self.ingr_dic[recipe_id]['dish_class']
+        rec_class = self.dataset_dict[recipe_id]['dish_class']
 
         # output
         return img, ingrs, igr_ln, rec_class, recipe_id

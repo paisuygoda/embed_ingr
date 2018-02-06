@@ -46,7 +46,7 @@ def datacheck():
         ingr = []
         for i in range(c[2]):
             ingr.append(ingr_id2text[ingr_id[i]])
-        rec_class = recipe_id2text[c[3]]
+        rec_class = recipe_id2text[int(c[3])]
         print("What you got...\ningr: ", ingr, "\nclass: ", rec_class)
         recipe_id = c[4]
         ingr = actual_ingr[recipe_id]

@@ -97,9 +97,9 @@ def process_outline():
             linedict = {"id": linelist[0], "title": linelist[5], "dish": linelist[9], "dish_class" : linelist[3]}
         except:
             print(linelist)
-            b = int(input())
-            c = int(input())
-            a = int(input())
+            b = 5 # int(input())
+            c = 4 # int(input())
+            a = 4 # int(input())
             linedict = {"id": linelist[0], "title": linelist[b], "dish": linelist[c], "dish_class" : linelist[a]}
             print("linedict = {'id': ", linelist[0], ", 'title': ", linelist[b], ", 'dish': ", linelist[c], ", 'dish_class': ", linelist[a], "}")
         data.append(linedict)
@@ -197,7 +197,7 @@ def class_id_set():
     with open('data/subdata/recipe_id2recipe_text.p', mode='wb') as f:
         pickle.dump(id2text, f)
 
-img_sep("~/im2ingr/data/images/")
+# img_sep("~/im2ingr/data/images")
 process_outline()
 process_ingredients()
 ontrogy()

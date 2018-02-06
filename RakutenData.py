@@ -29,10 +29,10 @@ def resize(img):
 class RakutenData(data.Dataset):
     def __init__(self, img_path='data/images/', data_path='data', partition=None):
 
-        with open('data/ingr_id.p','rb') as f:
+        with open('data/subdata/ingr_id.p','rb') as f:
             self.ingr_id = pickle.load(f)
 
-        with open('data/ontrogy_ingrcls.p','rb') as f:
+        with open('data/subdata/ontrogy_ingrcls.p','rb') as f:
             self.ontrogy = pickle.load(f)
 
         if data_path==None:

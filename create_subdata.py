@@ -205,6 +205,7 @@ def class_id_set():
         dish_class = linelist[3]
         if dish_class not in recipe_class:
             recipe_class[dish_class] = recipe_id
+            id2text.append(recipe_class)
             recipe_id += 1
     print(recipe_id)
     with open('data/subdata/recipe_class.p', mode='wb') as f:

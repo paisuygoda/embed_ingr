@@ -64,7 +64,7 @@ class RakutenData(data.Dataset):
         self.imgPath = img_path
 
     def __getitem__(self, index):
-        recipeId = self.ids[index]
+        recipeId = self.ids[index][:-4]
         path = self.imgPath + recipeId + '.jpg'
 
         # ingredients

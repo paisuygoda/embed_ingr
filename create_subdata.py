@@ -93,23 +93,22 @@ def ontrogy():
 
 
 def process_outline():
-    data = []
-
+    data = {}
     for line in open('data/Rakuten/recipe01_all_20170118.txt', 'r', encoding="utf-8"):
         linelist = line.split()
         try:
-            linedict = {linelist[0]: {"title": linelist[5], "dish": linelist[9], "dish_class" : linelist[3]}}
+            linedict = {"title": linelist[5], "dish": linelist[9], "dish_class" : linelist[3]}
         except:
             # print(linelist)
             b = 5 # int(input())
             c = 4 # int(input())
             a = 4 # int(input())
-            linedict = {linelist[0]: {"title": linelist[b], "dish": linelist[c], "dish_class": linelist[a]}}
+            linedict = {"title": linelist[b], "dish": linelist[c], "dish_class": linelist[a]}
             # print("linedict = {'id': ", linelist[0], ", 'title': ", linelist[b], ", 'dish': ", linelist[c], ", 'dish_class': ", linelist[a], "}")
-        data.append(linedict)
+        data[linelist[0]] = linedict
 
     with open('data/subdata/outline_dict.p', mode='wb') as f:
-        pickle.dump(linedict, f)
+        pickle.dump(data, f)
 
 
 def process_ingredients():
@@ -211,10 +210,10 @@ def class_id_set():
     with open('data/subdata/recipe_id2recipe_text.p', mode='wb') as f:
         pickle.dump(id2text, f)
 
-img_sep("home/goda/im2ingr/data/images/")
+# img_sep("home/goda/im2ingr/data/images/")
 process_outline()
 process_ingredients()
 combine_outline_ingredients()
-ontrogy()
-data_dict()
-class_id_set()
+# ontrogy()
+# data_dict()
+# class_id_set()

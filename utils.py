@@ -24,7 +24,7 @@ def look_pickle(path):
 
 
 def datacheck():
-    d = RakutenData(img_path="~/im2ingr/data/images/")
+    d = RakutenData(img_path="~/im2ingr/data/images/", partition="train")
     c = d[0]
     print(type(c))
     print(c)

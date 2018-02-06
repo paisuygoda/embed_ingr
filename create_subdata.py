@@ -70,6 +70,7 @@ def ontrogy():
     word = ""
     count = 1
     id_dic = {}
+    ingr_id2ingr_text = ["*"]
     mecab = MeCab.Tagger("-Ochasen")
     for row in tsv:
         if row[0] == "調理器具":
@@ -77,6 +78,7 @@ def ontrogy():
         if row[1] != word:
             word = row[1]
             id_dic[word] = count
+            ingr_id2ingr_text.append(word)
             count += 1
         kana = J2H(mecab, row[2])
         dic[kana] = row[1]
@@ -85,6 +87,8 @@ def ontrogy():
         pickle.dump(dic, f)
     with open('data/subdata/ingr_id.p', mode='wb') as f:
         pickle.dump(id_dic, f)
+    with open('data/subdata/ingr_id2ingr_text.p', mode='wb') as f:
+        pickle.dump(ingr_id2ingr_text, f)
     print(count)
 
 
@@ -94,19 +98,18 @@ def process_outline():
     for line in open('data/Rakuten/recipe01_all_20170118.txt', 'r', encoding="utf-8"):
         linelist = line.split()
         try:
-            linedict = {"id": linelist[0], "title": linelist[5], "dish": linelist[9], "dish_class" : linelist[3]}
+            linedict = {linelist[0]: {"title": linelist[5], "dish": linelist[9], "dish_class" : linelist[3]}}
         except:
             print(linelist)
             b = 5 # int(input())
             c = 4 # int(input())
             a = 4 # int(input())
-            linedict = {"id": linelist[0], "title": linelist[b], "dish": linelist[c], "dish_class" : linelist[a]}
+            linedict = {linelist[0]: {"title": linelist[b], "dish": linelist[c], "dish_class": linelist[a]}}
             print("linedict = {'id': ", linelist[0], ", 'title': ", linelist[b], ", 'dish': ", linelist[c], ", 'dish_class': ", linelist[a], "}")
         data.append(linedict)
 
     with open('data/subdata/outline_dict.p', mode='wb') as f:
         pickle.dump(linedict, f)
-
 
 
 def process_ingredients():
@@ -197,7 +200,7 @@ def class_id_set():
     with open('data/subdata/recipe_id2recipe_text.p', mode='wb') as f:
         pickle.dump(id2text, f)
 
-# img_sep("~/im2ingr/data/images")
+img_sep("home/goda/im2ingr/data/images")
 process_outline()
 process_ingredients()
 ontrogy()

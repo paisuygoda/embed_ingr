@@ -64,13 +64,13 @@ class RakutenData(data.Dataset):
         self.imgPath = img_path
 
     def __getitem__(self, index):
-        recipeId = self.ids[index][:-4]
-        path = self.imgPath + recipeId + '.jpg'
+        recipe_id = self.ids[index][:-4]
+        path = self.imgPath + recipe_id + '.jpg'
 
         # ingredients
         ingrs = []
         try:
-            l = self.ingr_dic[recipeId]['ingr']
+            l = self.ingr_dic[recipe_id]['ingr']
         except:
             l = []
         if len(l) is 0:
@@ -96,12 +96,10 @@ class RakutenData(data.Dataset):
         if self.transform is not None:
             img = self.transform(img)
 
-        rec_class = self.recipe_class[self.ingr_dic[recipeId]['class']]
-
-        img_id = recipeId
+        rec_class = self.recipe_class[self.ingr_dic[recipe_id]['class']]
 
         # output
-        return img, ingrs, igr_ln, rec_class, recipeId
+        return img, ingrs, igr_ln, rec_class, recipe_id
 
     def __len__(self):
         return len(self.ids)

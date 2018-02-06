@@ -1,5 +1,10 @@
 import pickle
 from RakutenData import RakutenData
+import sys
+
+sys.stdin =  open('/dev/stdin',  'r', encoding='UTF-8')
+sys.stdout = open('/dev/stdout', 'w', encoding='UTF-8')
+sys.stderr = open('/dev/stderr', 'w', encoding='UTF-8')
 
 def look_pickle(path):
     with open(path, 'rb') as f:
@@ -24,10 +29,28 @@ def look_pickle(path):
 
 
 def datacheck():
-    d = RakutenData(img_path="~/im2ingr/data/images/", partition="train")
-    c = d[0]
-    print(type(c))
-    print(c)
+
+    d = RakutenData(img_path="/home/goda/im2ingr/data/images/", partition="train")
+    with open('data/subdata/recipe_id2recipe_text.p', mode='rb') as f:
+        recipe_id2text = pickle.load(f)
+    with open('data/subdata/ingr_id2ingr_text.p', mode='rb') as f:
+        ingr_id2text = pickle.load(f)
+    with open('data/subdata/ingredients_dict.p', mode='rb') as f:
+        actual_ingr = pickle.load(f)
+    with open('data/subdata/outline_dict.p', mode='rb') as f:
+        actual_class = pickle.load(f)
+    for i in range(10):
+        c = d[i]
+        ingr_id = c[1]
+        ingr = []
+        for i in range(c[2]):
+            ingr.append(ingr_id2text[ingr_id[i]])
+        rec_class = recipe_id2text[c[3]]
+        print("What you got...\ningr: ", ingr, "\nclass: ", rec_class)
+        recipe_id = c[4]
+        ingr = actual_ingr[recipe_id]
+        rec_class = actual_class[recipe_id]
+        print("What actually is ...\ningr: ", ingr, "\nclass: ", rec_class)
 
 print("MODE? (1 = datacheck, 2 = image, 3 = pickle, 4 = text, 5 = img separation, \n\t6 = recipe_ingr, 7 = ontrogy)")
 m = input()

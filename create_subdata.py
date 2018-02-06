@@ -138,7 +138,10 @@ def combine_outline_ingredients():
         outlinedict = pickle.load(f)
 
     for k,v in outlinedict.items():
-        v["ingredients"] = ingr_dict[k]
+        try:
+            v["ingredients"] = ingr_dict[k]
+        except:
+            v["ingredients"] = []
 
     with open('data/subdata/dataset_dict.p', mode='wb') as f:
         pickle.dump(outlinedict, f)

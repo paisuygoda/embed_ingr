@@ -7,6 +7,7 @@ sys.stdout = open('/dev/stdout', 'w', encoding='UTF-8')
 sys.stderr = open('/dev/stderr', 'w', encoding='UTF-8')
 
 def look_pickle(path):
+    path = "data/subdata/" + path
     with open(path, 'rb') as f:
         file = pickle.load(f)
 
@@ -57,8 +58,6 @@ m = input()
 print("PATH?")
 path = input()
 if m == "3":
-    if path == 'O':
-        path = 'data/ontrogy_ingrcls.p'
     look_pickle(path)
 elif m == "1":
     datacheck()

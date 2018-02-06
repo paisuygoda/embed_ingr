@@ -24,7 +24,10 @@ def look_pickle(path):
 
 
 def datacheck():
-    print(RakutenData[0])
+    d = RakutenData(img_path="~/im2ingr/data/images/")
+    c = d[0]
+    print(type(c))
+    print(c)
 
 print("MODE? (1 = datacheck, 2 = image, 3 = pickle, 4 = text, 5 = img separation, \n\t6 = recipe_ingr, 7 = ontrogy)")
 m = input()

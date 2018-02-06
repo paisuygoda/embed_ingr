@@ -70,7 +70,7 @@ class RakutenData(data.Dataset):
         # ingredients
         ingrs = []
         try:
-            l = self.ingr_dic[recipe_id]['ingr']
+            l = self.ingr_dic[recipe_id]['ingredients']
         except:
             l = []
         if len(l) is 0:
@@ -96,7 +96,7 @@ class RakutenData(data.Dataset):
         if self.transform is not None:
             img = self.transform(img)
 
-        rec_class = self.recipe_class[self.ingr_dic[recipe_id]['class']]
+        rec_class = self.ingr_dic[recipe_id]['dish_class']
 
         # output
         return img, ingrs, igr_ln, rec_class, recipe_id

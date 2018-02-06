@@ -37,11 +37,11 @@ def img_sep(path):
     print("len(test)  = ", len(test_list))
     print("len(val)   = ", len(val_list))
 
-    with open("train_images.p", 'wb') as f:
+    with open("data/subdata/train_images.p", 'wb') as f:
         pickle.dump(train_list,f)
-    with open("test_images.p", 'wb') as f:
+    with open("data/subdata/test_images.p", 'wb') as f:
         pickle.dump(test_list,f)
-    with open("val_images.p", 'wb') as f:
+    with open("data/subdata/val_images.p", 'wb') as f:
         pickle.dump(val_list,f)
 
 
@@ -81,9 +81,9 @@ def ontrogy():
         kana = J2H(mecab, row[2])
         dic[kana] = row[1]
 
-    with open('data/ontrogy_ingrcls.p', mode='wb') as f:
+    with open('data/subdata/ontrogy_ingrcls.p', mode='wb') as f:
         pickle.dump(dic, f)
-    with open('data/ingr_id.p', mode='wb') as f:
+    with open('data/subdata/ingr_id.p', mode='wb') as f:
         pickle.dump(id_dic, f)
     print(count)
 
@@ -104,7 +104,7 @@ def process_outline():
             print("linedict = {'id': ", linelist[0], ", 'title': ", linelist[b], ", 'dish': ", linelist[c], ", 'dish_class': ", linelist[a], "}")
         data.append(linedict)
 
-    with open('data/outline_dict.p', mode='wb') as f:
+    with open('data/subdata/outline_dict.p', mode='wb') as f:
         pickle.dump(linedict, f)
 
 
@@ -126,7 +126,7 @@ def process_ingredients():
         linedict['ingredient'].append(text)
     data.append(linedict)
 
-    with open('data/ingredients_dict.p', mode='wb') as f:
+    with open('data/subdata/ingredients_dict.p', mode='wb') as f:
         pickle.dump(linedict, f)
 
 
@@ -137,7 +137,7 @@ def data_dict():
     misscount = 0.0
     dropped_dict = {}
     mecab = MeCab.Tagger("-Ochasen")
-    with open('data/ontrogy_ingrcls.p', mode='rb') as f:
+    with open('data/subdata/ontrogy_ingrcls.p', mode='rb') as f:
         ontrogy = pickle.load(f)
 
     for line in open('data/Rakuten/recipe01_all_20170118.txt', 'r', encoding="utf-8"):
@@ -168,7 +168,7 @@ def data_dict():
             misscount += 1.0
     data[recipeid]['ingr'] = ingrlist
 
-    with open('data/ingredients_dict.p', mode='wb') as f:
+    with open('data/subdata/ingredients_dict.p', mode='wb') as f:
         pickle.dump(data, f)
 
     print("\ndropped ingredient: ", misscount / count * 100.0, "%")
@@ -191,15 +191,15 @@ def class_id_set():
             recipe_class[dish_class] = recipe_id
             recipe_id += 1
     print(recipe_id)
-    with open('data/recipe_class.p', mode='wb') as f:
+    with open('data/subdata/recipe_class.p', mode='wb') as f:
         pickle.dump(recipe_class, f)
 
-    with open('data/recipe_id2recipe_text.p', mode='wb') as f:
+    with open('data/subdata/recipe_id2recipe_text.p', mode='wb') as f:
         pickle.dump(id2text, f)
 
-# img_sep(PATH_TO_IMAGES)
+img_sep("~/im2ingr/data/images/")
 process_outline()
 process_ingredients()
-# ontrogy()
-# data_dict()
-# class_id_set()
+ontrogy()
+data_dict()
+class_id_set()

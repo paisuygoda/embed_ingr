@@ -112,24 +112,24 @@ def process_outline():
 
 
 def process_ingredients():
-    data = []
+    data = {}
     id = 0
 
     for line in open('data/Rakuten/recipe02_material_20160112.txt', 'r', encoding="utf-8"):
         linelist = line.split()
         if id == 0:
             id = linelist[0]
-            linedict = {"id": linelist[0], "ingredient": []}
+            ingrlist = []
         elif not linelist[0] == id:
-            data.append(linedict)
+            data[id] = ingrlist
             id = linelist[0]
-            linedict = {"id": linelist[0], "ingredient": []}
+            ingrlist = []
         text = re.sub('[◎●Ａ　ABＢ■○①②③☆★※＊*▽▼▲△◆◇・()（）]', '', linelist[1])
-        linedict['ingredient'].append(text)
-    data.append(linedict)
+        ingrlist.append(text)
+    data[id] = ingrlist
 
     with open('data/subdata/ingredients_dict.p', mode='wb') as f:
-        pickle.dump(linedict, f)
+        pickle.dump(data, f)
 
 def combine_outline_ingredients():
     with open('data/subdata/ingredients_dict.p', mode='rb') as f:

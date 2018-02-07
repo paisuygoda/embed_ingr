@@ -7,14 +7,14 @@ import csv
 import sys
 import MeCab
 import re
-
+from RakutenData import RakutenData
 
 def img_sep(path):
-    directory = os.listdir(path)
+
     train_list  =[]
     test_list   =[]
     val_list    =[]
-
+    directory = os.listdir(path)
     totalnum = len(directory)
     train_limit = int(totalnum * 0.7)
     test_limit = int((totalnum - train_limit) / 2)
@@ -43,6 +43,22 @@ def img_sep(path):
         pickle.dump(test_list,f)
     with open("data/subdata/val_images.p", 'wb') as f:
         pickle.dump(val_list,f)
+
+
+def drop_invalid_images():
+    directory = os.listdir("/home/goda/im2ingr/data/images/")
+    with open("data/subdata/all_valid_images.p", 'wb') as f:
+        pickle.dump(directory,f)
+    d = RakutenData(partition="all")
+
+    valid_list = []
+    for i in range(d.len()):
+        single_data = d[i]
+        if single_data[5]:
+            valid_list.append(single_data[4])
+
+    with open("data/subdata/all_valid_images.p", 'wb') as f:
+        pickle.dump(valid_list,f)
 
 
 def J2H(mecab, text):
@@ -215,10 +231,12 @@ def class_id_set():
         pickle.dump(id2text, f)
 
 if __name__ == "__main__":
-    # img_sep("home/goda/im2ingr/data/images/")
+
     # process_outline()
     # process_ingredients()
     # combine_outline_ingredients()
     # ontrogy()
     # data_dict()
-    class_id_set()
+    # class_id_set()
+    drop_invalid_images()
+    # img_sep("home/goda/im2ingr/data/images/")

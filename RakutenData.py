@@ -69,7 +69,7 @@ class RakutenData(data.Dataset):
     def __getitem__(self, index):
         recipe_id = self.ids[index][:-4]
         path = self.imgPath + recipe_id + '.jpg'
-
+        validity = True
         # ingredients
         ingrs = []
         try:
@@ -78,6 +78,7 @@ class RakutenData(data.Dataset):
             l = []
         if len(l) is 0:
             l = ['*']
+            validity = False
         for item in l:
             item = J2H(self.mecab, item)
             if item in self.ontrogy:
@@ -85,9 +86,11 @@ class RakutenData(data.Dataset):
                     new_item = self.ontrogy[item]
                     ingrs.append(self.ingr_id[new_item])
                 except:
+                    validity = False
                     ingrs.append(0)
             else:
                 ingrs.append(0)
+                validity = False
         igr_ln = len(ingrs)
         if len(ingrs) < 50:
             ingrs = ingrs+[0]*(50-len(ingrs))
@@ -102,7 +105,7 @@ class RakutenData(data.Dataset):
         rec_class = self.recipe_class[self.dataset_dict[recipe_id]['dish_class']]
 
         # output
-        return img, ingrs, igr_ln, rec_class, recipe_id
+        return img, ingrs, igr_ln, rec_class, recipe_id, validity
 
     def __len__(self):
         return len(self.ids)

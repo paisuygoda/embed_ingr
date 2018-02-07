@@ -67,8 +67,8 @@ class RakutenData(data.Dataset):
         self.mecab = MeCab.Tagger("-Ochasen")
 
     def __getitem__(self, index):
-        recipe_id = self.ids[index][:-4]
-        path = self.imgPath + recipe_id + '.jpg'
+        recipe_id = self.ids[index][27:-4]
+        path = self.imgPath + self.ids[index]
         validity = True
         # ingredients
         ingrs = []

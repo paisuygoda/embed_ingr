@@ -6,7 +6,7 @@ import numpy as np
 import torch
 import torchvision.transforms as transforms
 from create_subdata import J2H
-import Mecab
+import MeCab
 
 
 def default_loader(path):

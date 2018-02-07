@@ -97,7 +97,11 @@ class RakutenData(data.Dataset):
         # ingrs = torch.LongTensor(ingrs)
 
         # load image
-        img = Image.open(path).convert('RGB')
+        try:
+            img = Image.open(path).convert('RGB')
+        except:
+            img = Image.new('RGB', (224,224), 'white')
+            validity = False
 
         if self.transform is not None:
             img = self.transform(img)

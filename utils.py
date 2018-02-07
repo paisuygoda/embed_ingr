@@ -46,11 +46,11 @@ def datacheck():
         for i in range(c[2]):
             ingr.append(ingr_id2text[ingr_id[i]])
         rec_class = recipe_id2text[int(c[3])]
-        print("What you got...\ningr: ", ingr, "\nclass: ", rec_class)
+        print("\nWhat you got...\ningr: ", ingr, "\nclass: ", rec_class)
         recipe_id = c[4]
         ingr = actual_ingr[recipe_id]
         rec_class = actual_class[recipe_id]
-        print("What actually is ...\ningr: ", ingr, "\nclass: ", rec_class)
+        print("What actually is ...\ningr: ", ingr, "\nclass: ", rec_class["dish_class"])
 
 print("MODE? (1 = datacheck, 2 = image, 3 = pickle, 4 = text, 5 = img separation, \n\t6 = recipe_ingr, 7 = ontrogy)")
 m = input()

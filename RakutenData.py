@@ -5,6 +5,8 @@ import pickle
 import numpy as np
 import torch
 import torchvision.transforms as transforms
+from create_subdata import J2H
+import Mecab
 
 
 def default_loader(path):
@@ -62,6 +64,7 @@ class RakutenData(data.Dataset):
             ])
 
         self.imgPath = img_path
+        self.mecab = MeCab.Tagger("-Ochasen")
 
     def __getitem__(self, index):
         recipe_id = self.ids[index][:-4]
@@ -70,7 +73,7 @@ class RakutenData(data.Dataset):
         # ingredients
         ingrs = []
         try:
-            l = self.ingr_dic[recipe_id]['ingredients']
+            l = self.dataset_dict[recipe_id]['ingredients']
         except:
             l = []
         if len(l) is 0:
@@ -78,6 +81,7 @@ class RakutenData(data.Dataset):
         for item in l:
             if item in self.ingr_id:
                 try:
+                    item = J2H(self.mecab, item)
                     new_item = self.ontrogy[item]
                     ingrs.append(self.ingr_id[new_item])
                 except:

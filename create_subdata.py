@@ -198,14 +198,14 @@ def data_dict():
 def class_id_set():
     recipe_class = {}
     recipe_id = 1
-    id2text = []
+    id2text = ["*"]
     for line in open('data/Rakuten/recipe01_all_20170118.txt', 'r', encoding="utf-8"):
         linelist = line.split('\t')
         dish = linelist[9]
         dish_class = linelist[3]
         if dish_class not in recipe_class:
             recipe_class[dish_class] = recipe_id
-            id2text.append(recipe_class)
+            id2text.append(dish_class)
             recipe_id += 1
     print(recipe_id)
     with open('data/subdata/recipe_class.p', mode='wb') as f:

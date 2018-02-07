@@ -79,9 +79,9 @@ class RakutenData(data.Dataset):
         if len(l) is 0:
             l = ['*']
         for item in l:
+            item = J2H(self.mecab, item)
             if item in self.ingr_id:
                 try:
-                    item = J2H(self.mecab, item)
                     new_item = self.ontrogy[item]
                     ingrs.append(self.ingr_id[new_item])
                 except:

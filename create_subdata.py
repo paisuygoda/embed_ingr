@@ -45,9 +45,22 @@ def img_sep(path):
     with open("data/subdata/val_images.p", 'wb') as f:
         pickle.dump(val_list,f)
 
+def strnum(i):
+    if i<10:
+        return "0" + str(i)
+    else:
+        return str(i)
 
 def drop_invalid_images():
-    directory = os.listdir("/home/goda/im2ingr/data/images/")
+    base_dir = "/srv/datasets/Rakuten/"
+    for num in range(1, 28):
+        directory = os.listdir("/home/goda/im2ingr/data/images/")
+        prefix = "recipe05_images"+strnum(num)+"_20160112/"
+        for line in directory:
+            line = prefix + line
+        print(directory)
+        if True:
+            return
     with open("data/subdata/all_valid_images.p", 'wb') as f:
         pickle.dump(directory,f)
     d = RakutenData(img_path="/home/goda/im2ingr/data/images/", partition="all_valid")
@@ -62,7 +75,7 @@ def drop_invalid_images():
         if single_data[5]:
             valid_list.append(single_data[4])
             valid_count += 1
-    print("Valid recipe: ", float(valid_count)/float(total))
+    print("\nValid recipe: ", valid_count, " (", (valid_count)/float(total)*100, "%)")
 
     with open("data/subdata/all_valid_images.p", 'wb') as f:
         pickle.dump(valid_list,f)

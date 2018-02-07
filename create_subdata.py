@@ -54,10 +54,11 @@ def strnum(i):
 def drop_invalid_images():
     base_dir = "/srv/datasets/Rakuten/"
     for num in range(1, 28):
-        directory = os.listdir("/home/goda/im2ingr/data/images/")
-        prefix = "recipe05_images"+strnum(num)+"_20160112/"
-        for line in directory:
-            line = prefix + line
+        directory = "recipe05_images"+strnum(num)+"_20160112/"
+        path = base_dir + directory
+        all_images = os.listdir(path)
+        for line in all_images:
+            line = directory + line
         print(directory)
         if True:
             return

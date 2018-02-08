@@ -2,7 +2,6 @@
 import pickle
 import os
 from numpy import random
-from PIL import Image
 import csv
 import sys
 import MeCab
@@ -10,18 +9,21 @@ import re
 from RakutenData import RakutenData
 from func import J2H
 
+
 def img_sep(path):
+
+    with open("data/subdata/all_valid_images.p", 'rb') as f:
+        all_images = pickle.load(f)
 
     train_list  =[]
     test_list   =[]
     val_list    =[]
-    directory = os.listdir(path)
-    totalnum = len(directory)
+    totalnum = len(all_images)
     train_limit = int(totalnum * 0.7)
     test_limit = int((totalnum - train_limit) / 2)
     val_limit = totalnum - train_limit - test_limit
 
-    for pic in directory:
+    for pic in all_images:
         seed = random.rand()
         if seed < 0.7 and len(train_list) < train_limit:
             train_list.append(pic)

@@ -1,9 +1,8 @@
+# -*- coding: utf-8 -*-
 import torch.utils.data as data
 from PIL import Image
 import os
 import pickle
-import numpy as np
-import torch
 import torchvision.transforms as transforms
 from func import J2H
 import MeCab
@@ -99,6 +98,8 @@ class RakutenData(data.Dataset):
         # load image
         try:
             img = Image.open(path).convert('RGB')
+            if img.size[0] < 224 or img.size[1] < 224:
+                validity = False
         except:
             img = Image.new('RGB', (224,224), 'white')
             validity = False
@@ -106,7 +107,11 @@ class RakutenData(data.Dataset):
         if self.transform is not None:
             img = self.transform(img)
 
-        rec_class = self.recipe_class[self.dataset_dict[recipe_id]['dish_class']]
+        try:
+            rec_class = self.recipe_class[self.dataset_dict[recipe_id]['dish_class']]
+        except:
+            rec_class = 0
+            validity = False
 
         # output
         return img, ingrs, igr_ln, rec_class, recipe_id, validity

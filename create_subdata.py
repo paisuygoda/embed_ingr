@@ -138,7 +138,7 @@ def process_ingredients():
     id = 0
 
     for line in open('data/Rakuten/recipe02_material_20160112.txt', 'r', encoding="utf-8"):
-        linelist = line.split()
+        linelist = line.split("\t")
         if id == 0:
             id = linelist[0]
             ingrlist = []
@@ -243,6 +243,6 @@ if __name__ == "__main__":
     # combine_outline_ingredients()
     # ontrogy()
     # data_dict()
-    # class_id_set()
-    drop_invalid_images()
+    class_id_set()
+    #drop_invalid_images()
     # img_sep("home/goda/im2ingr/data/images/")

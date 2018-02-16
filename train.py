@@ -10,7 +10,6 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
 import torch.backends.cudnn as cudnn
-from data_loader import ImagerLoader # our data_loader
 import numpy as np
 import pickle
 from args import get_parser
@@ -29,13 +28,13 @@ def main():
     os.environ["CUDA_VISIBLE_DEVICES"] = gpus
 
     model = models.resnet50(pretrained=True)
-    model.fc=nn.Linear(2048,469)
-    model = torch.nn.DataParallel(model).cuda()
+    model.fc = nn.Linear(2048,469)
 
     checkpoint = torch.load("model/ResNet50_469_best.pth.tar") # FoodLog-finetuned single-class food recognition model
     model.load_state_dict(checkpoint["state_dict"])
     modules = list(model.children())[:-1]  # we do not use the last fc layer.
     model = nn.Sequential(*modules)
+    model = torch.nn.DataParallel(model).cuda()
     print(model)
 
 if __name__ == '__main__':

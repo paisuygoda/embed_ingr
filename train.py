@@ -24,15 +24,16 @@ np.random.seed(opts.seed)
 
 def main():
 
-    gpus = ','.join(map(str, opts.gpu))
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpus
+    # gpus = ','.join(map(str, opts.gpu))
+    # os.environ["CUDA_VISIBLE_DEVICES"] = gpus
 
     model = models.resnet50(pretrained=True)
     model.fc = nn.Linear(2048,469)
+    model = torch.nn.DataParallel(model).cuda()
 
     checkpoint = torch.load("model/ResNet50_469_best.pth.tar") # FoodLog-finetuned single-class food recognition model
     model.load_state_dict(checkpoint["state_dict"])
-    modules = list(model.children())[:-1]  # we do not use the last fc layer.
+    modules = list(model.modules())[:-1]  # we do not use the last fc layer.
     model = nn.Sequential(*modules)
     model = torch.nn.DataParallel(model).cuda()
     print(model)

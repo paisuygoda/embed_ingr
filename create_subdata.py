@@ -117,7 +117,7 @@ def ontrogy():
 def process_outline():
     data = {}
     for line in open('data/Rakuten/recipe01_all_20170118.txt', 'r', encoding="utf-8"):
-        linelist = line.split()
+        linelist = line.split("\t")
         try:
             linedict = {"title": linelist[5], "dish": linelist[9], "dish_class" : linelist[3]}
         except:
@@ -186,7 +186,7 @@ def data_dict():
         count += 1.0
         proceeding = count / 5274990.0 * 100.0
         sys.stdout.write("\r%f%%" % proceeding)
-        linelist = line.split()
+        linelist = line.split("\t")
         if recipeid == 0:
             recipeid = linelist[0]
             ingrlist = []
@@ -238,11 +238,11 @@ def class_id_set():
 
 if __name__ == "__main__":
 
-    # process_outline()
-    # process_ingredients()
-    # combine_outline_ingredients()
-    # ontrogy()
-    # data_dict()
+    process_outline()
+    process_ingredients()
+    combine_outline_ingredients()
+    ontrogy()
+    data_dict()
     class_id_set()
-    #drop_invalid_images()
-    # img_sep("home/goda/im2ingr/data/images/")
+    drop_invalid_images()
+    img_sep("home/goda/im2ingr/data/images/")

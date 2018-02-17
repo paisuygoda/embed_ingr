@@ -114,7 +114,10 @@ class RakutenData(data.Dataset):
             validity = False
 
         # output
-        return img, ingrs, igr_ln, rec_class, recipe_id, validity
+        if self.partition == "all_valid":
+            return img, ingrs, igr_ln, rec_class, self.ids[index], validity
+        else:
+            return img, ingrs, igr_ln, rec_class, recipe_id, validity
 
     def __len__(self):
         return len(self.ids)

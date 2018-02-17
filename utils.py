@@ -1,10 +1,13 @@
 import pickle
-from RakutenData import RakutenData
+# from RakutenData import RakutenData
 import sys
+import numpy as np
 
+"""
 sys.stdin =  open('/dev/stdin',  'r', encoding='UTF-8')
 sys.stdout = open('/dev/stdout', 'w', encoding='UTF-8')
 sys.stderr = open('/dev/stderr', 'w', encoding='UTF-8')
+"""
 
 def look_pickle(path):
     path = "data/subdata/" + path

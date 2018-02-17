@@ -206,7 +206,7 @@ def data_dict():
             misscount += 1.0
     data[recipeid]['ingr'] = ingrlist
 
-    with open('data/subdata/ingredients_dict.p', mode='wb') as f:
+    with open('data/subdata/kana_dataset_dict.p', mode='wb') as f:
         pickle.dump(data, f)
 
     print("\ndropped ingredient: ", misscount / count * 100.0, "%")

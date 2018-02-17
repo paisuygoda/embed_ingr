@@ -3,6 +3,7 @@ import torch.utils.data as data
 from PIL import Image
 import os
 import pickle
+import torch
 import torchvision.transforms as transforms
 from func import J2H
 import MeCab
@@ -90,10 +91,10 @@ class RakutenData(data.Dataset):
             else:
                 ingrs.append(0)
                 validity = False
-        igr_ln = len(ingrs)
+        ingr_ln = len(ingrs)
         if len(ingrs) < 50:
             ingrs = ingrs+[0]*(50-len(ingrs))
-        # ingrs = torch.LongTensor(ingrs)
+        ingrs = torch.LongTensor(ingrs)
 
         # load image
         try:

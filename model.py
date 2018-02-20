@@ -75,10 +75,10 @@ class im_ingr_embed(nn.Module):
         self.image_model = im_embed()
         self.ingr_model = ingr_embed()
 
-    def forward(self, data, is_from_datasetloader=True):  # we need to check how the input is going to be provided to the model
+    def forward(self, img, ingr, is_from_datasetloader=True):  # we need to check how the input is going to be provided to the model
 
-        im_emb = self.image_model(data)
-        ingr_emb = self.ingr_model(data, is_from_datasetloader)
+        im_emb = self.image_model(img)
+        ingr_emb = self.ingr_model(ingr, is_from_datasetloader)
 
         output = [im_emb, ingr_emb]
         return output

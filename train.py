@@ -80,11 +80,12 @@ def train(train_loader, model, criterion, optimizer, epoch):
         img = torch.autograd.Variable(data[0]).cuda()
         ingr = torch.autograd.Variable(data[1]).cuda()
         target = torch.autograd.Variable(data[5].cuda(async=True))
-        output = model(data)
+
+        output = model(img, ingr)
 
         # compute loss
 
-        loss = criterion(img, ingr, target)
+        loss = criterion(output[0], output[1], target)
         # measure performance and record loss
         loss_counter.count(loss.data[0])
 

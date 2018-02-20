@@ -125,10 +125,10 @@ class RakutenData(data.Dataset):
             ingrs = torch.LongTensor(ingrs)
         else:
             ingr_ln_T = torch.LongTensor([[ingr_ln]])
-            input_label = np.zeros((1, opts.numofingr))
+            input_label = np.zeros((1, opts.numofingr), np.int8)
             for ingr in ingrs:
-                input_label[0][ingr] = 1.0
-            input_label[0][0] = 0.0
+                input_label[0][ingr] = 1
+            input_label[0][0] = 0
             input_label = torch.LongTensor(input_label)
             ingrs = torch.cat((ingr_ln_T, input_label))
 

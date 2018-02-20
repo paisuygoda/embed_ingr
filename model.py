@@ -1,19 +1,20 @@
 import torch
 import torch.nn as nn
 import torch.nn.parallel
-import torch.legacy as legacy
 import torch.optim
 import torch.utils.data
-import torchvision.transforms as transforms
-import torchvision.datasets as datasets
 import torchvision.models as models
-import torchwordemb
+import numpy as np
 from args import get_parser
 
 # =============================================================================
 parser = get_parser()
 opts = parser.parse_args()
 # =============================================================================
+
+
+def norm(input, p=2, dim=1, eps=1e-12):
+    return input / input.norm(p,dim,keepdim=True).clamp(min=eps).expand_as(input)
 
 
 class im_embed(nn.Module):
@@ -32,126 +33,51 @@ class im_embed(nn.Module):
         image_model = torch.nn.DataParallel(image_model).cuda()
         self.image_model = image_model
 
-    def forward(self, image):
-        return self.image_model(image)
+    def forward(self, data):
+        return norm(self.image_model(data[0]))
 
 
 class ingr_embed(nn.Module):
     def __init__(self):
-        self.ingr_model = nn.Sequential(
-            nn.Linear(opts.numofingr, 500),
+        ingr_model = nn.Sequential(
+            nn.Linear(opts.numofingr, 512),
             nn.ReLU(),
-            nn.Linear(500, 1000),
+            nn.Linear(512, 1024),
             nn.ReLU(),
-            nn.Linear(1000, 2048),
+            nn.Linear(1024, 2047),
         )
+        ingr_model = torch.nn.DataParallel(ingr_model).cuda()
+        self.ingr_model = ingr_model
 
-    def forward(self, ingrs):
+    def forward(self, data, is_from_datasetloader=True):
+        if is_from_datasetloader:
+            ingrs = data[1].numpy().ravel()
+            ingr_ln = int(data[2].numpy()[0])
+            ingrs = ingrs[:ingr_ln]
+        else:
+            ingrs = data[1] # temporal setting - might be changed
+
+        final_emb = np.zeros((1, 2047))
+        for ingr in ingrs:
+            input_label = np.zeros((1, opts.numofingr))
+            input_label[0][ingr] = 1.0
+            emb = self.ingr_model(input_label)
+            final_emb += norm(emb)
+
+        return torch.cat((data[2], final_emb))
 
 
 class im_ingr_embed(nn.Module):
     def __init__(self, resume):
         super(im_ingr_embed, self).__init__()
 
-        if resume:
-            image_model = models.resnet50()
-            image_model.fc = nn.Linear(2048, 469)
-            modules = list(image_model.modules())[:-1]  # remove last layer to get image feature
-            image_model = nn.Sequential(*modules)
-            image_model = torch.nn.DataParallel(image_model).cuda()
-            self.image_model = image_model
+        self.image_model = im_embed()
+        self.ingr_model = ingr_embed()
 
-        else:
-            image_model = models.resnet50()
-            image_model.fc = nn.Linear(2048, 469)
-            image_model = torch.nn.DataParallel(image_model).cuda()
+    def forward(self, data, is_from_datasetloader=True):  # we need to check how the input is going to be provided to the model
 
-            checkpoint = torch.load(
-                "model/ResNet50_469_best.pth.tar")  # FoodLog-finetuned single-class food recognition model
-            image_model.load_state_dict(checkpoint["state_dict"])
-            modules = list(image_model.modules())[:-1]  # remove last layer to get image feature
-            image_model = nn.Sequential(*modules)
-            image_model = torch.nn.DataParallel(image_model).cuda()
-            self.image_model = image_model
+        im_emb = self.image_model(data)
+        ingr_emb = self.ingr_model(data, is_from_datasetloader)
 
-            self.ingr_model = nn.Sequential(
-                nn.Linear(opts.imfeatDim, opts.embDim),
-                nn.Tanh(),
-            )
-
-        self.ingRNN_ = ingRNN()
-        self.table = TableModule()
-
-    def forward(self, x, y1, y2, z1, z2):  # we need to check how the input is going to be provided to the model
-        # recipe embedding
-        recipe_emb = self.table([self.stRNN_(y1, y2), self.ingRNN_(z1, z2)], 1)  # joining on the last dim
-        recipe_emb = self.recipe_embedding(recipe_emb)
-        recipe_emb = norm(recipe_emb)
-
-        # visual embedding
-        visual_emb = self.visionMLP(x)
-        visual_emb = visual_emb.view(visual_emb.size(0), -1)
-        visual_emb = self.visual_embedding(visual_emb)
-        visual_emb = norm(visual_emb)
-
-        if opts.semantic_reg:
-            visual_sem = self.semantic_branch(visual_emb)
-            recipe_sem = self.semantic_branch(recipe_emb)
-            # final output
-            output = [visual_emb, recipe_emb, visual_sem, recipe_sem]
-        else:
-            # final output
-            output = [visual_emb, recipe_emb]
-        return output
-
-        # Tweaked im2recipe model for ingredient retrieval
-
-
-class im2ingr(nn.Module):
-    def __init__(self):
-        super(im2ingr, self).__init__()
-        if opts.preModel == 'resNet50':
-
-            resnet = models.resnet50(pretrained=True)
-            modules = list(resnet.children())[:-1]  # we do not use the last fc layer.
-            self.visionMLP = nn.Sequential(*modules)
-
-            self.visual_embedding = nn.Sequential(
-                nn.Linear(opts.imfeatDim, opts.embDim),
-                nn.Tanh(),
-            )
-
-            self.recipe_embedding = nn.Sequential(
-                nn.Linear(opts.irnnDim * 2, opts.embDim),
-                nn.Tanh(),
-            )
-
-        else:
-            raise Exception('Only resNet50 model is implemented.')
-
-        self.ingRNN_ = ingRNN()
-        self.table = TableModule()
-
-        if opts.semantic_reg:
-            self.semantic_branch = nn.Linear(opts.embDim, opts.numClasses)
-
-    def forward(self, x, z1, z2):  # we need to check how the input is going to be provided to the model
-        # recipe embedding
-        recipe_emb = self.recipe_embedding(self.ingRNN_(z1, z2))
-        recipe_emb = norm(recipe_emb)
-
-        # visual embedding
-        visual_emb = self.visionMLP(x)
-        visual_emb = visual_emb.view(visual_emb.size(0), -1)
-        visual_emb = self.visual_embedding(visual_emb)
-        visual_emb = norm(visual_emb)
-
-        if opts.semantic_reg:
-            visual_sem = self.semantic_branch(visual_emb)
-            recipe_sem = self.semantic_branch(recipe_emb)
-            # final output
-            output = [visual_emb, recipe_emb, visual_sem, recipe_sem]
-        else:
-            # final output
-            output = [visual_emb, recipe_emb]
+        output = [im_emb, ingr_emb]
         return output

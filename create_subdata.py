@@ -180,7 +180,14 @@ def data_dict():
 
     for line in open('data/Rakuten/recipe01_all_20170118.txt', 'r', encoding="utf-8"):
         linelist = line.split('\t')
-        data[linelist[0]] = {"title": linelist[5], "dish": linelist[9], "class": linelist[3]}
+        try:
+            data[linelist[0]] = {"title": linelist[5], "dish": linelist[9], "dish_class" : linelist[3]}
+        except:
+            # print(linelist)
+            b = 5 # int(input())
+            c = 4 # int(input())
+            a = 4 # int(input())
+            data[linelist[0]] = {"title": linelist[b], "dish": linelist[c], "dish_class": linelist[a]}
 
     for line in open('data/Rakuten/recipe02_material_20160112.txt', 'r', encoding="utf-8"):
         count += 1.0

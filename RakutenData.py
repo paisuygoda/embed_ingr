@@ -7,15 +7,8 @@ import torch
 import torchvision.transforms as transforms
 from func import J2H
 import MeCab
+import numpy as np
 
-
-def default_loader(path):
-    try:
-        im = Image.open(path).convert('RGB')
-        return im
-    except:
-        # print path
-        return Image.new('RGB', (224,224), 'white')
 
 def resize(img):
     w,h = img.size
@@ -68,8 +61,35 @@ class RakutenData(data.Dataset):
 
     def __getitem__(self, index):
         recipe_id = self.ids[index][27:-4]
-        path = self.imgPath + self.ids[index]
         validity = True
+
+        # load image
+        if self.partition == 'train':
+            match = np.random.uniform() > 0.8
+        else:
+            match = True
+
+        if match:
+            path = self.imgPath + self.ids[index]
+        else:
+            all_idx = range(len(self.ids))
+            rndindex = np.random.choice(all_idx)
+            while rndindex == index:
+                rndindex = np.random.choice(all_idx)  # pick a random index
+            path = self.imgPath + self.ids[rndindex]
+            validity = False
+
+        try:
+            img = Image.open(path).convert('RGB')
+            if img.size[0] < 224 or img.size[1] < 224:
+                validity = False
+        except:
+            img = Image.new('RGB', (224, 224), 'white')
+            validity = False
+
+        if self.transform is not None:
+            img = self.transform(img)
+
         # ingredients
         ingrs = []
         try:
@@ -96,18 +116,6 @@ class RakutenData(data.Dataset):
             ingrs = ingrs+[0]*(50-len(ingrs))
         ingrs = torch.LongTensor(ingrs)
 
-        # load image
-        try:
-            img = Image.open(path).convert('RGB')
-            if img.size[0] < 224 or img.size[1] < 224:
-                validity = False
-        except:
-            img = Image.new('RGB', (224,224), 'white')
-            validity = False
-
-        if self.transform is not None:
-            img = self.transform(img)
-
         try:
             rec_class = self.recipe_class[self.dataset_dict[recipe_id]['dish_class']]
         except:
@@ -116,9 +124,13 @@ class RakutenData(data.Dataset):
 
         # output
         if self.partition == "all_valid":
-            return img, ingrs, igr_ln, rec_class, self.ids[index], validity
+            return img, ingrs, ingr_ln, rec_class, self.ids[index], validity
         else:
-            return img, ingrs, igr_ln, rec_class, recipe_id, validity
+            if validity:
+                target = 1
+            else:
+                target = -1
+            return img, ingrs, ingr_ln, rec_class, recipe_id, target
 
     def __len__(self):
         return len(self.ids)

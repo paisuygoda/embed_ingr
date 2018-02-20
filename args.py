@@ -13,6 +13,6 @@ def get_parser():
     parser.add_argument('--epoch', default=500, type=int)
     parser.add_argument('--updatefreq', default=2, type=int)
     parser.add_argument('--valfreq', default=10, type=int)
-    parser.add_argument('--numofingr', default=303, type=int)
+    parser.add_argument('--numofingr', default=304, type=int)
 
     return parser

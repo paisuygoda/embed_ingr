@@ -8,7 +8,12 @@ import torchvision.transforms as transforms
 from func import J2H
 import MeCab
 import numpy as np
+from args import get_parser
 
+# =============================================================================
+parser = get_parser()
+opts = parser.parse_args()
+# =============================================================================
 
 def resize(img):
     w,h = img.size
@@ -112,9 +117,19 @@ class RakutenData(data.Dataset):
                 ingrs.append(0)
                 validity = False
         ingr_ln = len(ingrs)
-        if len(ingrs) < 50:
-            ingrs = ingrs+[0]*(50-len(ingrs))
-        ingrs = torch.LongTensor(ingrs)
+
+        if self.partition == "use":
+            if len(ingrs) < 50:
+                ingrs = ingrs + [0] * (50 - len(ingrs))
+            ingrs = torch.LongTensor(ingrs)
+        else:
+            ingr_ln_T = torch.LongTensor([[ingr_ln]])
+            input_label = np.zeros((1, opts.numofingr))
+            for ingr in ingrs:
+                input_label[0][ingr] = 1.0
+            input_label[0][0] = 0.0
+            input_label = torch.LongTensor(input_label)
+            ingrs = torch.cat((ingr_ln_T, input_label))
 
         try:
             rec_class = self.recipe_class[self.dataset_dict[recipe_id]['dish_class']]

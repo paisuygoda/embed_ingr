@@ -39,6 +39,7 @@ class im_embed(nn.Module):
 
 class ingr_embed(nn.Module):
     def __init__(self):
+        super(ingr_embed, self).__init__()
         ingr_model = nn.Sequential(
             nn.Linear(opts.numofingr, 512),
             nn.ReLU(),
@@ -68,7 +69,7 @@ class ingr_embed(nn.Module):
 
 
 class im_ingr_embed(nn.Module):
-    def __init__(self, resume):
+    def __init__(self, resume=False):
         super(im_ingr_embed, self).__init__()
 
         self.image_model = im_embed()

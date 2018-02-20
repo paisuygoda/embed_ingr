@@ -77,12 +77,14 @@ def train(train_loader, model, criterion, optimizer, epoch):
     model.train()
     for data in train_loader:
 
+        img = torch.autograd.Variable(data[0]).cuda()
+        ingr = torch.autograd.Variable(data[1]).cuda()
         target = torch.autograd.Variable(data[5].cuda(async=True))
         output = model(data)
 
         # compute loss
 
-        loss = criterion(output[0], output[1], target)
+        loss = criterion(img, ingr, target)
         # measure performance and record loss
         loss_counter.count(loss.data[0])
 
@@ -96,7 +98,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
 
 def val(val_loader, model, criterion):
     loss_counter = AvgCount()
-    model.train()
+    model.eval()
     for data in val_loader:
         target = torch.autograd.Variable(data[5].cuda(async=True))
         output = model(data)

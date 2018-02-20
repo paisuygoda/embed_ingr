@@ -79,9 +79,10 @@ def train(train_loader, model, criterion, optimizer, epoch):
 
         img = torch.autograd.Variable(data[0]).cuda()
         ingr = torch.autograd.Variable(data[1]).cuda()
+        ingr_ln = torch.autograd.Variable(data[2]).cuda()
         target = torch.autograd.Variable(data[5].cuda(async=True))
 
-        output = model(img, ingr)
+        output = model(img, ingr, ingr_ln)
 
         # compute loss
 

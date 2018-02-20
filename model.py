@@ -34,7 +34,7 @@ class im_embed(nn.Module):
         self.image_model = image_model
 
     def forward(self, data):
-        return norm(self.image_model(data[0]))
+        return norm(self.image_model(data))
 
 
 class ingr_embed(nn.Module):
@@ -50,22 +50,27 @@ class ingr_embed(nn.Module):
         ingr_model = torch.nn.DataParallel(ingr_model).cuda()
         self.ingr_model = ingr_model
 
-    def forward(self, data, is_from_datasetloader=True):
+    def forward(self, ingr, ingr_ln, is_from_datasetloader=True):
         if is_from_datasetloader:
-            ingrs = data[1].numpy().ravel()
-            ingr_ln = int(data[2].numpy()[0])
-            ingrs = ingrs[:ingr_ln]
+            ingr_list = []
+            for i in range(len(ingr)):
+                single_ingr = ingr[i].numpy().ravel()
+                single_ingr_ln = int(ingr_ln[i].numpy()[0])
+                ingr_list.append(single_ingr[:single_ingr_ln])
         else:
-            ingrs = data[1] # temporal setting - might be changed
+            pass  # temporal setting - might be changed
 
-        final_emb = np.zeros((1, 2047))
-        for ingr in ingrs:
+        final_emb = np.zeros((len(ingr), 2047))
+        for i, single_ingr in enumerate(ingr_list):
             input_label = np.zeros((1, opts.numofingr))
-            input_label[0][ingr] = 1.0
+            for a in single_ingr:
+                input_label[0][a] = 1.0
+            input_label[0][0] = 0.0
+            input_label = torch.from_numpy(input_label)
             emb = self.ingr_model(input_label)
-            final_emb += norm(emb)
+            final_emb[i] = torch.cat(ingr_ln, norm(emb))
 
-        return torch.cat((data[2], final_emb))
+        return final_emb
 
 
 class im_ingr_embed(nn.Module):
@@ -75,10 +80,10 @@ class im_ingr_embed(nn.Module):
         self.image_model = im_embed()
         self.ingr_model = ingr_embed()
 
-    def forward(self, img, ingr, is_from_datasetloader=True):  # we need to check how the input is going to be provided to the model
+    def forward(self, img, ingr, ingr_ln, is_from_datasetloader=True):  # we need to check how the input is going to be provided to the model
 
         im_emb = self.image_model(img)
-        ingr_emb = self.ingr_model(ingr, is_from_datasetloader)
+        ingr_emb = self.ingr_model(ingr, ingr_ln, is_from_datasetloader)
 
         output = [im_emb, ingr_emb]
         return output

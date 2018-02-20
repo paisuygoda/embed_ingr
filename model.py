@@ -51,6 +51,7 @@ class ingr_embed(nn.Module):
         self.ingr_model = ingr_model
 
     def forward(self, ingr, ingr_ln, is_from_datasetloader=True):
+        """
         if is_from_datasetloader:
             ingr_list = []
             for i in range(len(ingr)):
@@ -59,11 +60,11 @@ class ingr_embed(nn.Module):
                 ingr_list.append(single_ingr[:single_ingr_ln])
         else:
             pass  # temporal setting - might be changed
-
+        """
         ingr_ln = ingr_ln.float().cuda().view(len(ingr), 1)
-        for i, single_ingr in enumerate(ingr_list):
+        for i, single_ingr in enumerate(len(ingr)):
             input_label = np.zeros((1, opts.numofingr))
-            for a in single_ingr:
+            for a in enumerate(ingr[i]):
                 input_label[0][a] = 1.0
             input_label[0][0] = 0.0
             input_label = torch.autograd.Variable(torch.from_numpy(input_label).float()).cuda()

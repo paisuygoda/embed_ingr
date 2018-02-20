@@ -15,6 +15,7 @@ parser = get_parser()
 opts = parser.parse_args()
 # =============================================================================
 
+
 def resize(img):
     w,h = img.size
     if w<h:

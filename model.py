@@ -28,7 +28,7 @@ class im_embed(nn.Module):
         checkpoint = torch.load(
             "model/ResNet50_469_best.pth.tar")  # FoodLog-finetuned single-class food recognition model
         image_model.load_state_dict(checkpoint["state_dict"])
-        modules = list(image_model.modules())[:-1]  # remove last layer to get image feature
+        modules = list(image_model.module.children())[:-1]  # remove last layer to get image feature
         image_model = nn.Sequential(*modules)
         image_model = torch.nn.DataParallel(image_model).cuda()
         self.image_model = image_model
@@ -54,8 +54,8 @@ class ingr_embed(nn.Module):
         if is_from_datasetloader:
             ingr_list = []
             for i in range(len(ingr)):
-                single_ingr = ingr[i].numpy().ravel()
-                single_ingr_ln = int(ingr_ln[i].numpy()[0])
+                single_ingr = ingr[i].data.cpu().numpy().ravel()
+                single_ingr_ln = int(ingr_ln[i].data.cpu().numpy()[0])
                 ingr_list.append(single_ingr[:single_ingr_ln])
         else:
             pass  # temporal setting - might be changed
@@ -66,7 +66,7 @@ class ingr_embed(nn.Module):
             for a in single_ingr:
                 input_label[0][a] = 1.0
             input_label[0][0] = 0.0
-            input_label = torch.from_numpy(input_label)
+            input_label = torch.autograd.Variable(torch.from_numpy(input_label)).cuda()
             emb = self.ingr_model(input_label)
             final_emb[i] = torch.cat(ingr_ln, norm(emb))
 

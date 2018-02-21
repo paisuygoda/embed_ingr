@@ -33,10 +33,10 @@ class MultilabelModel(nn.Module):
             "model/ResNet50_469_best.pth.tar")  # FoodLog-finetuned single-class food recognition model
         image_model.load_state_dict(checkpoint["state_dict"])
         image_model.module.fc = nn.Sequential(nn.Linear(2048, opts.numofingr), nn.Sigmoid())
-        self.image_model = image_model
+        self.image_model = image_model.cuda()
 
     def forward(self, data):
-        return self.image_model(data).view(opts.batch_size, 2048)
+        return self.image_model(data)
 
 def main():
 
@@ -69,7 +69,7 @@ def main():
             if is_best:
                 filename = 'snapshots/model_e{0:03d}_v{1:.3f}.pth.tar'.format(epoch + 1, best_val)
                 torch.save({'epoch': epoch + 1, 'state_dict': model.state_dict(), 'best_val': best_val,
-                            'optimizer': optimizer.state_dict(), 'valtrack': valtrack}, filename)
+                            'optimizer': optimizer.state_dict()}, filename)
 
             print('----- Validation: {.3f} -----'.format(val_loss))
             print('----- Best Score: {.3f} (best) -----'.format(best_val))

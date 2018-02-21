@@ -26,13 +26,13 @@ class MultilabelModel(nn.Module):
         super(MultilabelModel, self).__init__()
 
         image_model = models.resnet50()
-        image_model.fc = nn.Sequential(nn.Linear(2048, 469), nn.Sigmoid())
+        image_model.fc = nn.Linear(2048, 469)
         image_model = torch.nn.DataParallel(image_model).cuda()
 
         checkpoint = torch.load(
             "model/ResNet50_469_best.pth.tar")  # FoodLog-finetuned single-class food recognition model
         image_model.load_state_dict(checkpoint["state_dict"])
-        image_model.module.fc = nn.Linear(2048, opts.numofingr)
+        image_model.module.fc = nn.Sequential(nn.Linear(2048, opts.numofingr), nn.Sigmoid())
         self.image_model = image_model
 
     def forward(self, data):

@@ -76,6 +76,8 @@ def train(train_loader, model, criterion, optimizer, epoch):
     loss_counter = AvgCount()
     model.train()
     for data in train_loader:
+        if len(data[0]) != opts.batch_size:
+            break
 
         img = torch.autograd.Variable(data[0]).cuda()
         ingr = torch.autograd.Variable(data[1]).cuda()
@@ -102,6 +104,8 @@ def val(val_loader, model, criterion):
     loss_counter = AvgCount()
     model.eval()
     for data in val_loader:
+        if len(data[0]) != opts.batch_size:
+            break
         target = torch.autograd.Variable(data[5].cuda(async=True))
         output = model(data)
 
@@ -127,7 +131,6 @@ class AvgCount(object):
 
 
 def switch_optim_lr(optimizer, opts):
-    opts.lr *= 0.98
     if optimizer.param_groups[0]['lr'] is 0.0:
         optimizer.param_groups[0]['lr'] = opts.lr
         optimizer.param_groups[1]['lr'] = 0.0

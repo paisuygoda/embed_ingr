@@ -26,13 +26,13 @@ class MultilabelModel(nn.Module):
         super(MultilabelModel, self).__init__()
 
         image_model = models.resnet50()
-        image_model.fc = nn.Linear(2048, 469)
+        image_model.fc = nn.Sequence(nn.Linear(2048, 469), nn.Sigmoid())
         image_model = torch.nn.DataParallel(image_model).cuda()
 
         checkpoint = torch.load(
             "model/ResNet50_469_best.pth.tar")  # FoodLog-finetuned single-class food recognition model
         image_model.load_state_dict(checkpoint["state_dict"])
-        image_model.fc = nn.Linear(2048, opts.numofingr)
+        image_model.module.fc = nn.Linear(2048, opts.numofingr)
         self.image_model = image_model
 
     def forward(self, data):
@@ -43,16 +43,13 @@ def main():
     gpus = ','.join(map(str, opts.gpu))
     os.environ["CUDA_VISIBLE_DEVICES"] = gpus
     model = MultilabelModel()
-
     print(model)
     return
 
     best_val = float('inf')
 
-    criterion = nn.CosineEmbeddingLoss(0.1).cuda()
-    optimizer = torch.optim.Adam([
-        {'params': model.ingr_model.parameters(), 'lr': opts.lr},
-        {'params': model.image_model.parameters(), 'lr': 0.0}])
+    criterion = nn.MultiLabelSoftMarginLoss()
+    optimizer = torch.optim.Adam([{'params': model.parameters(), 'lr': opts.lr}])
 
     cudnn.benchmark = True
 
@@ -67,17 +64,6 @@ def main():
 
         if (epoch + 1) % opts.valfreq == 0 and epoch != 0:
             val_loss = val(val_loader, model, criterion)
-
-            # check patience
-            if val_loss >= best_val:
-                valtrack += 1
-            else:
-                valtrack = 0
-            if valtrack >= opts.updatefreq:
-                switch_optim_lr(optimizer, opts)
-                valtrack = 0
-                print("switched learning model.. ingr lr: {0:.2f}, "
-                      "img lr: {1:.2f}".format(optimizer.param_groups[0]['lr'], optimizer.param_groups[1]['lr']))
 
             # save the best model
             is_best = val_loss < best_val

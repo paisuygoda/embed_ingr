@@ -17,7 +17,7 @@ opts = parser.parse_args()
 
 
 class RakutenData(data.Dataset):
-    def __init__(self, img_path='/srv/datasets/Rakuten/', data_path='data/subdata/', partition=None):
+    def __init__(self, img_path='/srv/datasets/Rakuten/', data_path='data/subdata/', partition=None, mode=None):
 
         with open('data/subdata/ingr_id.p','rb') as f:
             self.ingr_id = pickle.load(f)
@@ -53,6 +53,7 @@ class RakutenData(data.Dataset):
 
         self.imgPath = img_path
         self.mecab = MeCab.Tagger("-Ochasen")
+        self.mode = mode
 
     def __getitem__(self, index):
         recipe_id = self.ids[index][27:-4]
@@ -108,7 +109,7 @@ class RakutenData(data.Dataset):
                 validity = False
         ingr_ln = len(ingrs)
 
-        if self.partition == "use":
+        if self.mode == "use":
             if len(ingrs) < 50:
                 ingrs = ingrs + [0] * (50 - len(ingrs))
             ingrs = torch.LongTensor(ingrs)
@@ -117,7 +118,7 @@ class RakutenData(data.Dataset):
             for ingr in ingrs:
                 input_label[ingr] = 1
             input_label[0] = 0
-            ingrs = torch.LongTensor(input_label)
+            ingrs = torch.FloatTensor(input_label)
 
         try:
             rec_class = self.recipe_class[self.dataset_dict[recipe_id]['dish_class']]

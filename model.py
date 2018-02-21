@@ -78,10 +78,10 @@ class ingr_embed(nn.Module):
         ingr_ln = ingr_ln.float().cuda().view(len(ingr), 1)
         for i, single_ingr in enumerate(ingr):
             if i == 0:
-                emb = self.ingr_model(single_ingr)
+                emb = norm(self.ingr_model(single_ingr.view(1, opts.numofingr)))
             else:
-                emb.torch.cat((emb, self.ingr_model(single_ingr)))
-        final_emb = torch.cat((ingr_ln.float(), norm(emb)), dim=1)
+                emb = torch.cat((emb, norm(self.ingr_model(single_ingr.view(1, opts.numofingr)))))
+        final_emb = torch.cat((ingr_ln.float(), emb), dim=1)
         return final_emb
 
 

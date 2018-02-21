@@ -1,5 +1,5 @@
 import pickle
-# from RakutenData import RakutenData
+from RakutenData import RakutenData
 import sys
 import numpy as np
 
@@ -33,7 +33,7 @@ def look_pickle(path):
 
 def datacheck():
 
-    d = RakutenData(img_path="/home/goda/im2ingr/data/images/", partition="train")
+    d = RakutenData(img_path="/home/goda/im2ingr/data/images/", partition="train", mode="use")
     with open('data/subdata/recipe_id2recipe_text.p', mode='rb') as f:
         recipe_id2text = pickle.load(f)
     with open('data/subdata/ingr_id2ingr_text.p', mode='rb') as f:

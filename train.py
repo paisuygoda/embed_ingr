@@ -88,7 +88,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
 
         loss = criterion(output[0], output[1], target)
         # measure performance and record loss
-        loss_counter.count(loss.data[0])
+        loss_counter.add(loss.data[0])
 
         # compute gradient and do Adam step
         optimizer.zero_grad()
@@ -109,7 +109,7 @@ def val(val_loader, model, criterion):
 
         loss = criterion(output[0], output[1], target)
         # measure performance and record loss
-        loss_counter.count(loss.data[0])
+        loss_counter.add(loss.data[0])
 
     return loss_counter.avg
 
@@ -120,7 +120,7 @@ class AvgCount(object):
         self.sum = 0
         self.count = 0
 
-    def count(self, val):
+    def add(self, val):
         self.sum += val
         self.count += 1
         self.avg = self.sum / self.count

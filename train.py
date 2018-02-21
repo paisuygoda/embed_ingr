@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 import os
+import sys
 import torch
 import torch.nn as nn
 import torch.nn.parallel
@@ -74,9 +75,10 @@ def main():
 def train(train_loader, model, criterion, optimizer, epoch):
     loss_counter = AvgCount()
     model.train()
-    for data in train_loader:
+    for i, data in enumerate(train_loader):
         if len(data[0]) != opts.batch_size:
             break
+        sys.stdout.write("\r%d" % i)
 
         img = torch.autograd.Variable(data[0]).cuda()
         ingr = torch.autograd.Variable(data[1]).cuda()
@@ -95,7 +97,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-
+    sys.stdout.write("\r")
     print('Epoch: {0}\tLoss {1:.4f}'.format(epoch, loss_counter.avg))
 
 
@@ -105,8 +107,13 @@ def val(val_loader, model, criterion):
     for data in val_loader:
         if len(data[0]) != opts.batch_size:
             break
+            
+        img = torch.autograd.Variable(data[0]).cuda()
+        ingr = torch.autograd.Variable(data[1]).cuda()
+        ingr_ln = torch.autograd.Variable(data[2]).cuda()
         target = torch.autograd.Variable(data[5].cuda(async=True))
-        output = model(data)
+
+        output = model(img, ingr, ingr_ln)
 
         # compute loss
 

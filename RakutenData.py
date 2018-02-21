@@ -17,7 +17,8 @@ opts = parser.parse_args()
 
 
 class RakutenData(data.Dataset):
-    def __init__(self, img_path='/srv/datasets/Rakuten/', data_path='data/subdata/', partition=None, mode=None):
+    def __init__(self, img_path='/srv/datasets/Rakuten/', data_path='data/subdata/', partition=None,
+                 mode=None, mismatch_rate=0.8):
 
         with open('data/subdata/ingr_id.p','rb') as f:
             self.ingr_id = pickle.load(f)
@@ -54,6 +55,7 @@ class RakutenData(data.Dataset):
         self.imgPath = img_path
         self.mecab = MeCab.Tagger("-Ochasen")
         self.mode = mode
+        self.mismatch_rate = mismatch_rate
 
     def __getitem__(self, index):
         recipe_id = self.ids[index][27:-4]
@@ -61,7 +63,7 @@ class RakutenData(data.Dataset):
 
         # load image
         if self.partition == 'train':
-            match = np.random.uniform() > 0.8
+            match = np.random.uniform() > self.mismatch_rate
         else:
             match = True
 

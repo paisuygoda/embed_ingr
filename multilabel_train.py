@@ -43,8 +43,6 @@ def main():
     gpus = ','.join(map(str, opts.gpu))
     os.environ["CUDA_VISIBLE_DEVICES"] = gpus
     model = MultilabelModel()
-    print(model)
-    return
 
     best_val = float('inf')
 
@@ -54,7 +52,7 @@ def main():
     cudnn.benchmark = True
 
     train_loader = torch.utils.data.DataLoader(RakutenData(partition='train'), batch_size=opts.batch_size, shuffle=True,
-                                               num_workers=opts.workers)
+                                               num_workers=opts.workers, mismatch_rate=0.0)
     val_loader = torch.utils.data.DataLoader(RakutenData(partition='val'), batch_size=opts.batch_size, shuffle=True,
                                              num_workers=opts.workers)
 
@@ -86,14 +84,11 @@ def train(train_loader, model, criterion, optimizer, epoch):
 
         img = torch.autograd.Variable(data[0]).cuda()
         ingr = torch.autograd.Variable(data[1]).cuda()
-        ingr_ln = torch.autograd.Variable(data[2]).cuda()
-        target = torch.autograd.Variable(data[5].cuda(async=True))
 
-        output = model(img, ingr, ingr_ln)
+        output = model(img)
 
         # compute loss
-
-        loss = criterion(output[0], output[1], target)
+        loss = criterion(output, ingr)
         # measure performance and record loss
         loss_counter.add(loss.data[0])
 
@@ -111,7 +106,6 @@ def val(val_loader, model, criterion):
     for data in val_loader:
         if len(data[0]) != opts.batch_size:
             break
-        target = torch.autograd.Variable(data[5].cuda(async=True))
         output = model(data)
 
         # compute loss

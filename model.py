@@ -34,7 +34,7 @@ class im_embed(nn.Module):
         self.image_model = image_model
 
     def forward(self, data):
-        return norm(self.image_model(data))
+        return self.image_model(data).view(opts.batch_size, 2048)
 
 
 class ingr_embed(nn.Module):

@@ -106,11 +106,15 @@ def val(val_loader, model, criterion):
     for data in val_loader:
         if len(data[0]) != opts.batch_size:
             break
-        output = model(data)
+
+        img = torch.autograd.Variable(data[0]).cuda()
+        ingr = torch.autograd.Variable(data[1]).cuda()
+
+        output = model(img)
 
         # compute loss
 
-        loss = criterion(output[0], output[1], target)
+        loss = criterion(output, ingr)
         # measure performance and record loss
         loss_counter.add(loss.data[0])
 

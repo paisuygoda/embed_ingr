@@ -26,7 +26,7 @@ class MultilabelModel(nn.Module):
         super(MultilabelModel, self).__init__()
 
         image_model = models.resnet50()
-        image_model.fc = nn.Sequence(nn.Linear(2048, 469), nn.Sigmoid())
+        image_model.fc = nn.Sequential(nn.Linear(2048, 469), nn.Sigmoid())
         image_model = torch.nn.DataParallel(image_model).cuda()
 
         checkpoint = torch.load(

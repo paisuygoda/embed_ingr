@@ -60,6 +60,20 @@ class ingr_embed(nn.Module):
                 ingr_list.append(single_ingr[:single_ingr_ln])
         else:
             pass  # temporal setting - might be changed
+
+        ingr_ln = ingr_ln.float().cuda().view(len(ingr), 1)
+        for i, single_ingr in enumerate(len(ingr)):
+            input_label = np.zeros((1, opts.numofingr))
+            for a in enumerate(ingr[i]):
+                input_label[0][a] = 1.0
+            input_label[0][0] = 0.0
+            input_label = torch.autograd.Variable(torch.from_numpy(input_label).float()).cuda()
+            if i == 0:
+                all_input = input_label
+            else:
+                all_input = torch.cat((all_input, input_label), dim=1)
+        emb = self.ingr_model(all_input)
+        final_emb = torch.cat((ingr_ln.float(), norm(emb)))
         """
         ingr_ln = ingr_ln.float().cuda().view(len(ingr), 1)
         for i, single_ingr in enumerate(len(ingr)):
@@ -74,7 +88,6 @@ class ingr_embed(nn.Module):
                 all_input = torch.cat((all_input, input_label), dim=1)
         emb = self.ingr_model(all_input)
         final_emb = torch.cat((ingr_ln.float(), norm(emb)))
-
         return final_emb
 
 

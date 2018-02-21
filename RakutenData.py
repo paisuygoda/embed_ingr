@@ -16,17 +16,6 @@ opts = parser.parse_args()
 # =============================================================================
 
 
-def resize(img):
-    w,h = img.size
-    if w<h:
-        ratio = float(h)/float(w)
-        img = img.resize((256,int(256*ratio)))
-    else:
-        ratio = float(w)/float(h)
-        img = img.resize((int(256*ratio),256))
-
-    return img
-
 class RakutenData(data.Dataset):
     def __init__(self, img_path='/srv/datasets/Rakuten/', data_path='data/subdata/', partition=None):
 
@@ -124,13 +113,11 @@ class RakutenData(data.Dataset):
                 ingrs = ingrs + [0] * (50 - len(ingrs))
             ingrs = torch.LongTensor(ingrs)
         else:
-            ingr_ln_T = torch.LongTensor([[ingr_ln]])
-            input_label = [0]* opts.numofingr
+            input_label = [0] * opts.numofingr
             for ingr in ingrs:
-                input_label[0][ingr] = 1
-            input_label[0][0] = 0
-            input_label = torch.LongTensor(input_label)
-            ingrs = torch.cat((ingr_ln_T, input_label))
+                input_label[ingr] = 1
+            input_label[0] = 0
+            ingrs = torch.LongTensor(input_label)
 
         try:
             rec_class = self.recipe_class[self.dataset_dict[recipe_id]['dish_class']]

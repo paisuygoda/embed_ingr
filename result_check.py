@@ -5,7 +5,7 @@ import sys
 
 
 def check_vectorize():
-    with open("data/dataset_dict.p", 'rb') as f:
+    with open("data/subdata/dataset_dict.p", 'rb') as f:
         dataset_dict = pickle.load(f)
     with open("results/img_feature.p", 'rb') as f:
         img_feature = pickle.load(f)

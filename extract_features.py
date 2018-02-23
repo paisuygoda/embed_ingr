@@ -50,7 +50,7 @@ def main():
         if i==0:
             img_feature = output[0].data.cpu().numpy()
             ing_feature = output[1].data.cpu().numpy()
-            recipe_id_list = recipe_id.numpy()
+            recipe_id_list = recipe_id
         else:
             img_feature = np.concatenate((img_feature, output[0].data.cpu().numpy()),axis=0)
             ing_feature = np.concatenate((ing_feature, output[1].data.cpu().numpy()),axis=0)

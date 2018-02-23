@@ -51,13 +51,14 @@ def main():
                 temp_best_val = val_loss
                 torch.save({'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict()}, tempfilename)
             else:
-                switch_optim_lr(optimizer, opts)
-                temp_best_val = float('inf')
-                print("switched learning model.. ingr lr: {0}, "
-                      "img lr: {1}".format(optimizer.param_groups[0]['lr'], optimizer.param_groups[1]['lr']))
                 checkpoint = torch.load(tempfilename)
                 model.load_state_dict(checkpoint["state_dict"])
                 optimizer.load_state_dict(checkpoint["optimizer"])
+
+                temp_best_val = float('inf')
+                switch_optim_lr(optimizer, opts)
+                print("switched learning model.. ingr lr: {0}, "
+                      "img lr: {1}".format(optimizer.param_groups[0]['lr'], optimizer.param_groups[1]['lr']))
 
             # save the best model
             is_best = val_loss < best_val

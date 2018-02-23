@@ -9,8 +9,31 @@ sys.stdout = open('/dev/stdout', 'w', encoding='UTF-8')
 sys.stderr = open('/dev/stderr', 'w', encoding='UTF-8')
 """
 
+
 def look_pickle(path):
     path = "data/subdata/" + path
+    with open(path, 'rb') as f:
+        file = pickle.load(f)
+
+    if type(file) is list:
+        for key, value in enumerate(file):
+            print(value)
+            if key > 10:
+                break
+    elif type(file) is dict:
+        print("key?")
+        s = input()
+        if s in file:
+            print(file[s])
+        else:
+            print(file)
+    else:
+        print(file)
+    print(len(file))
+
+
+def look_pickle_r(path):
+    path = "results/" + path
     with open(path, 'rb') as f:
         file = pickle.load(f)
 
@@ -61,5 +84,7 @@ if m == "3":
     look_pickle(path)
 elif m == "1":
     datacheck()
+elif m == '2':
+    look_pickle_r(path)
 else:
     print("Bad input mode")

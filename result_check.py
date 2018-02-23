@@ -37,8 +37,8 @@ def check_vectorize():
         query_id = str(recipe_id_list[qid])
         result_id = str(recipe_id_list[id])
 
-        query = dataset_dict[query_id]['ingr']
-        result = dataset_dict[result_id]['ingr']
+        query = dataset_dict[query_id]['ingredients']
+        result = dataset_dict[result_id]['ingredients']
 
         if 10 < qid < 20:
             print("new_query = ", query, ", new_result = ", result)

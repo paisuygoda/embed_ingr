@@ -65,6 +65,24 @@ def main():
     with open('results/recipe_id_list.p', 'wb') as f:
         pickle.dump(recipe_id_list, f)
 
+    print("Saved img & recipe features.")
+
+    for i in range(opts.numofingr):
+        input_label = [0.0] * opts.numofingr
+        input_label[i] = 1.0
+        ingr = torch.autograd.Variable(torch.FloatTensor(input_label)).cuda()
+        ingr_ln = torch.autograd.Variable(1).cuda()
+        emb = model.ingr_model(ingr, ingr_ln)
+
+        if i == 0:
+            ind_feature = emb.data.cpu().numpy()
+        else:
+            ind_feature = np.concatenate((ind_feature, emb.data.cpu().numpy()),axis=0)
+
+    with open('results/individual_ing_feature.p', 'wb') as f:
+        pickle.dump(ind_feature, f)
+    print("Saved individual ingredient features.")
+
 
 class AvgCount(object):
     def __init__(self):

@@ -71,7 +71,7 @@ def main():
         input_label = [0.0] * opts.numofingr
         input_label[i] = 1.0
         ingr = torch.autograd.Variable(torch.FloatTensor(input_label)).cuda()
-        ingr_ln = torch.autograd.Variable(1).cuda()
+        ingr_ln = torch.autograd.Variable(torch.FloatTensor(1)).cuda()
         emb = model.ingr_model(ingr, ingr_ln)
 
         if i == 0:

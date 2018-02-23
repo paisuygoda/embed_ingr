@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import time
 import os
 import sys
 import torch
@@ -8,7 +7,6 @@ import torch.nn.parallel
 import torch.optim
 import torch.utils.data
 import torch.backends.cudnn as cudnn
-import numpy as np
 from model import im_ingr_embed
 from RakutenData import RakutenData
 from args import get_parser
@@ -19,7 +17,6 @@ opts = parser.parse_args()
 # =============================================================================
 
 torch.cuda.manual_seed(opts.seed)
-np.random.seed(opts.seed)
 
 def main():
 

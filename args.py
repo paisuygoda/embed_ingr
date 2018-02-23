@@ -14,5 +14,6 @@ def get_parser():
     parser.add_argument('--updatefreq', default=2, type=int)
     parser.add_argument('--valfreq', default=10, type=int)
     parser.add_argument('--numofingr', default=304, type=int)
+    parser.add_argument('--model_path', default="snapshots/best_model.pth.tar")
 
     return parser

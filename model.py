@@ -18,16 +18,17 @@ def norm(input, p=2, dim=1, eps=1e-12):
 
 
 class im_embed(nn.Module):
-    def __init__(self):
+    def __init__(self, trainmode):
         super(im_embed, self).__init__()
 
         image_model = models.resnet50()
         image_model.fc = nn.Linear(2048, 469)
         image_model = torch.nn.DataParallel(image_model).cuda()
 
-        checkpoint = torch.load(
-            "model/ResNet50_469_best.pth.tar")  # FoodLog-finetuned single-class food recognition model
-        image_model.load_state_dict(checkpoint["state_dict"])
+        if trainmode:
+            checkpoint = torch.load(
+                "model/ResNet50_469_best.pth.tar")  # FoodLog-finetuned single-class food recognition model
+            image_model.load_state_dict(checkpoint["state_dict"])
         modules = list(image_model.module.children())[:-1]  # remove last layer to get image feature
         image_model = nn.Sequential(*modules)
         image_model = torch.nn.DataParallel(image_model).cuda()
@@ -51,30 +52,6 @@ class ingr_embed(nn.Module):
         self.ingr_model = ingr_model
 
     def forward(self, ingr, ingr_ln, is_from_datasetloader=True):
-        """
-        if is_from_datasetloader:
-            ingr_list = []
-            for i in range(len(ingr)):
-                single_ingr = ingr[i].data.cpu().numpy().ravel()
-                single_ingr_ln = int(ingr_ln[i].data.cpu().numpy()[0])
-                ingr_list.append(single_ingr[:single_ingr_ln])
-        else:
-            pass  # temporal setting - might be changed
-
-        ingr_ln = ingr_ln.float().cuda().view(len(ingr), 1)
-        for i, single_ingr in enumerate(len(ingr)):
-            input_label = np.zeros((1, opts.numofingr))
-            for a in enumerate(ingr[i]):
-                input_label[0][a] = 1.0
-            input_label[0][0] = 0.0
-            input_label = torch.autograd.Variable(torch.from_numpy(input_label).float()).cuda()
-            if i == 0:
-                all_input = input_label
-            else:
-                all_input = torch.cat((all_input, input_label), dim=1)
-        emb = self.ingr_model(all_input)
-        final_emb = torch.cat((ingr_ln.float(), norm(emb)))
-        """
         ingr_ln = ingr_ln.float().cuda().view(len(ingr), 1)
         for i, single_ingr in enumerate(ingr):
             if i == 0:
@@ -86,10 +63,10 @@ class ingr_embed(nn.Module):
 
 
 class im_ingr_embed(nn.Module):
-    def __init__(self, resume=False):
+    def __init__(self, trainmode=True):
         super(im_ingr_embed, self).__init__()
 
-        self.image_model = im_embed()
+        self.image_model = im_embed(trainmode)
         self.ingr_model = ingr_embed()
 
     def forward(self, img, ingr, ingr_ln, is_from_datasetloader=True):  # we need to check how the input is going to be provided to the model

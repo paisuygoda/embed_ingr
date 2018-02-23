@@ -38,7 +38,7 @@ def main():
         ingr = torch.autograd.Variable(data[1]).cuda()
         ingr_ln = torch.autograd.Variable(data[2]).cuda()
         target = torch.autograd.Variable(data[5].cuda(async=True))
-        recipe_id = data[4]
+        recipe_id = np.asarray(data[4])
 
         output = model(img, ingr, ingr_ln)
 

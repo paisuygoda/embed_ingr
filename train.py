@@ -28,8 +28,9 @@ def main():
     model = im_ingr_embed()
 
     best_val = float('inf')
+    temp_best_val = float('inf')
+    tempfilename = 'snapshots/model_temp.pth.tar'
 
-    valtrack = opts.updatefreq
     criterion = nn.CosineEmbeddingLoss(0.1).cuda()
     optimizer = torch.optim.Adam([
         {'params': model.ingr_model.parameters(), 'lr': opts.lr},
@@ -49,16 +50,17 @@ def main():
         if (epoch + 1) % opts.valfreq == 0 and epoch != 0:
             val_loss = val(val_loader, model, criterion)
 
-            # check patience
-            if val_loss <= best_val:
-                valtrack += 1
+            if val_loss <= temp_best_val:
+                temp_best_val = val_loss
+                torch.save({'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict()}, tempfilename)
             else:
-                valtrack = 0
-            if valtrack >= opts.updatefreq:
                 switch_optim_lr(optimizer, opts)
-                valtrack = 0
+                temp_best_val = float('inf')
                 print("switched learning model.. ingr lr: {0}, "
                       "img lr: {1}".format(optimizer.param_groups[0]['lr'], optimizer.param_groups[1]['lr']))
+                checkpoint = torch.load(tempfilename)
+                model.load_state_dict(checkpoint["state_dict"])
+                optimizer.load_state_dict(checkpoint["optimizer"])
 
             # save the best model
             is_best = val_loss < best_val
@@ -66,7 +68,7 @@ def main():
             if is_best:
                 filename = 'snapshots/model_e{0:03d}_v{1:.3f}.pth.tar'.format(epoch + 1, best_val)
                 torch.save({'epoch': epoch + 1, 'state_dict': model.state_dict(), 'best_val': best_val,
-                            'optimizer': optimizer.state_dict(), 'valtrack': valtrack}, filename)
+                            'optimizer': optimizer.state_dict()}, filename)
 
             print('----- Validation: {:.3f} -----'.format(val_loss))
             print('----- Best Score: {:.3f} (best) -----'.format(best_val))

@@ -32,7 +32,7 @@ class MultilabelModel(nn.Module):
         checkpoint = torch.load(
             "model/ResNet50_469_best.pth.tar")  # FoodLog-finetuned single-class food recognition model
         image_model.load_state_dict(checkpoint["state_dict"])
-        image_model.module.fc = nn.Sequential(nn.Linear(2048, opts.numofingr), nn.Sigmoid())
+        image_model.module.fc = nn.Linear(2048, opts.numofingr)
         self.image_model = image_model.cuda()
 
     def forward(self, data):
@@ -67,12 +67,12 @@ def main():
             is_best = val_loss < best_val
             best_val = min(val_loss, best_val)
             if is_best:
-                filename = 'snapshots/model_e{0:03d}_v{1:.3f}.pth.tar'.format(epoch + 1, best_val)
+                filename = 'snapshots/multilabel_model_e{0:03d}_v{1:.3f}.pth.tar'.format(epoch + 1, best_val)
                 torch.save({'epoch': epoch + 1, 'state_dict': model.state_dict(), 'best_val': best_val,
                             'optimizer': optimizer.state_dict()}, filename)
 
-            print('----- Validation: {.3f} -----'.format(val_loss))
-            print('----- Best Score: {.3f} (best) -----'.format(best_val))
+            print('----- Validation: {:.3f} -----'.format(val_loss))
+            print('----- Best Score: {:.3f} (best) -----'.format(best_val))
 
 
 def train(train_loader, model, criterion, optimizer, epoch):

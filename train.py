@@ -50,15 +50,15 @@ def main():
             val_loss = val(val_loader, model, criterion)
 
             # check patience
-            if val_loss >= best_val:
+            if val_loss <= best_val:
                 valtrack += 1
             else:
                 valtrack = 0
             if valtrack >= opts.updatefreq:
                 switch_optim_lr(optimizer, opts)
                 valtrack = 0
-                print("switched learning model.. ingr lr: {0:.2f}, "
-                      "img lr: {1:.2f}".format(optimizer.param_groups[0]['lr'], optimizer.param_groups[1]['lr']))
+                print("switched learning model.. ingr lr: {0}, "
+                      "img lr: {1}".format(optimizer.param_groups[0]['lr'], optimizer.param_groups[1]['lr']))
 
             # save the best model
             is_best = val_loss < best_val
@@ -68,8 +68,8 @@ def main():
                 torch.save({'epoch': epoch + 1, 'state_dict': model.state_dict(), 'best_val': best_val,
                             'optimizer': optimizer.state_dict(), 'valtrack': valtrack}, filename)
 
-            print('----- Validation: {.3f} -----'.format(val_loss))
-            print('----- Best Score: {.3f} (best) -----'.format(best_val))
+            print('----- Validation: {:.3f} -----'.format(val_loss))
+            print('----- Best Score: {:.3f} (best) -----'.format(best_val))
 
 
 def train(train_loader, model, criterion, optimizer, epoch):

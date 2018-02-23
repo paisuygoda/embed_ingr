@@ -54,7 +54,7 @@ def main():
         else:
             img_feature = np.concatenate((img_feature, output[0].data.cpu().numpy()),axis=0)
             ing_feature = np.concatenate((ing_feature, output[1].data.cpu().numpy()),axis=0)
-            recipe_id_list = np.concatenate((recipe_id_list, recipe_id.numpy()), axis=0)
+            recipe_id_list = np.concatenate((recipe_id_list, recipe_id), axis=0)
 
     print("Test loss: ", loss_counter.avg)
 

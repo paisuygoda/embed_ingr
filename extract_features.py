@@ -58,11 +58,11 @@ def main():
 
     print("Test loss: ", loss_counter.avg)
 
-    with open('results/img_feature.pkl', 'wb') as f:
+    with open('results/img_feature.p', 'wb') as f:
         pickle.dump(img_feature, f)
-    with open('results/ing_feature.pkl', 'wb') as f:
+    with open('results/ing_feature.p', 'wb') as f:
         pickle.dump(ing_feature, f)
-    with open('results/recipe_id_list.pkl', 'wb') as f:
+    with open('results/recipe_id_list.p', 'wb') as f:
         pickle.dump(recipe_id_list, f)
 
 

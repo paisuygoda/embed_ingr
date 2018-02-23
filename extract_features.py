@@ -37,12 +37,13 @@ def main():
         img = torch.autograd.Variable(data[0]).cuda()
         ingr = torch.autograd.Variable(data[1]).cuda()
         ingr_ln = torch.autograd.Variable(data[2]).cuda()
+        target = torch.autograd.Variable(data[5].cuda(async=True))
         recipe_id = data[4]
 
         output = model(img, ingr, ingr_ln)
 
         # compute loss
-        loss = criterion(output[0], output[1], 1)
+        loss = criterion(output[0], output[1], target)
         # measure performance and record loss
         loss_counter.add(loss.data[0])
 

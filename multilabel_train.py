@@ -51,8 +51,8 @@ def main():
 
     cudnn.benchmark = True
 
-    train_loader = torch.utils.data.DataLoader(RakutenData(partition='train'), batch_size=opts.batch_size, shuffle=True,
-                                               num_workers=opts.workers, mismatch_rate=0.0)
+    train_loader = torch.utils.data.DataLoader(RakutenData(partition='train', mismatch_rate=0.0), batch_size=opts.batch_size, shuffle=True,
+                                               num_workers=opts.workers)
     val_loader = torch.utils.data.DataLoader(RakutenData(partition='val'), batch_size=opts.batch_size, shuffle=True,
                                              num_workers=opts.workers)
 

@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.parallel
 import torch.optim
 import torch.utils.data
+import torch.utils.data as data
 import numpy as np
 from model import im_ingr_embed
 from RakutenData import RakutenData
@@ -15,6 +16,19 @@ import pickle
 parser = get_parser()
 opts = parser.parse_args()
 # =============================================================================
+
+
+class IngredientData(data.Dataset):
+    def __init__(self):
+        self.numofingr = opts.numofingr
+
+    def __getitem__(self, index):
+        input_label = [0.0] * opts.numofingr
+        input_label[index] = 1.0
+        return input_label, 1
+
+    def __len__(self):
+        return self.numofingr
 
 
 def main():
@@ -67,12 +81,11 @@ def main():
 
     print("Saved img & recipe features.")
 
-    for i in range(opts.numofingr):
-        input_label = [0.0] * opts.numofingr
-        input_label[i] = 1.0
-        ingr = torch.autograd.Variable(torch.FloatTensor(input_label)).cuda()
-        ingr_ln = torch.autograd.Variable(torch.FloatTensor(1)).cuda()
-        emb = model.ingr_model(ingr, ingr_ln)
+    ingr_loader = torch.utils.data.DataLoader(IngredientData(), batch_size=1)
+    for i, data in enumerate(ingr_loader):
+        ingrs = torch.autograd.Variable(data[0]).cuda()
+        ingr_ln = torch.autograd.Variable(data[1]).cuda()
+        emb = model.ingr_model(ingrs, ingr_ln)
 
         if i == 0:
             ind_feature = emb.data.cpu().numpy()

@@ -16,4 +16,6 @@ def get_parser():
     parser.add_argument('--numofingr', default=304, type=int)
     parser.add_argument('--model_path', default="snapshots/best_model.pth.tar")
 
+    parser.add_argument('--test_full', default=1, type=int)
+
     return parser

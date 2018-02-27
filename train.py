@@ -35,7 +35,7 @@ def main():
 
     cudnn.benchmark = True
 
-    train_loader = torch.utils.data.DataLoader(RakutenData(partition='train'), batch_size=opts.batch_size, shuffle=True,
+    train_loader = torch.utils.data.DataLoader(RakutenData(partition='train', mismatch_rate=0.2), batch_size=opts.batch_size, shuffle=True,
                                                num_workers=opts.workers)
     val_loader = torch.utils.data.DataLoader(RakutenData(partition='val'), batch_size=opts.batch_size, shuffle=True,
                                              num_workers=opts.workers)
@@ -137,7 +137,7 @@ class AvgCount(object):
 
 
 def switch_optim_lr(optimizer, opts):
-    if optimizer.param_groups[0]['lr'] is 0.0:
+    if optimizer.param_groups[1]['lr'] > 1e-12:
         optimizer.param_groups[0]['lr'] = opts.lr
         optimizer.param_groups[1]['lr'] = 0.0
     else:

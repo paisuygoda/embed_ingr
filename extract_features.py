@@ -25,6 +25,7 @@ class IngredientData(data.Dataset):
     def __getitem__(self, index):
         input_label = [0.0] * opts.numofingr
         input_label[index] = 1.0
+        input_label = torch.FloatTensor(input_label)
         return input_label, 1
 
     def __len__(self):
@@ -47,7 +48,7 @@ def main():
     model.eval()
     print("model loaded.")
 
-    if opts.test_full < 1:
+    if opts.test_full > 0:
         for i, data in enumerate(test_loader):
             if len(data[0]) != opts.batch_size:
                 break

@@ -37,14 +37,17 @@ def main():
     model = im_ingr_embed(trainmode=False)
     criterion = nn.CosineEmbeddingLoss(0.1).cuda()
 
-    if opts.test_full < 1:
-        test_loader = torch.utils.data.DataLoader(RakutenData(partition='test'), batch_size=opts.batch_size,
-                                                  shuffle=True, num_workers=opts.workers)
-        checkpoint = torch.load(opts.model_path)
-        model.load_state_dict(checkpoint["state_dict"])
 
-        loss_counter = AvgCount()
-        model.eval()
+    test_loader = torch.utils.data.DataLoader(RakutenData(partition='test'), batch_size=opts.batch_size,
+                                              shuffle=True, num_workers=opts.workers)
+    checkpoint = torch.load(opts.model_path)
+    model.load_state_dict(checkpoint["state_dict"])
+
+    loss_counter = AvgCount()
+    model.eval()
+    print("model loaded.")
+
+    if opts.test_full < 1:
         for i, data in enumerate(test_loader):
             if len(data[0]) != opts.batch_size:
                 break

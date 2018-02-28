@@ -106,7 +106,7 @@ def multulabel_main():
     gpus = ','.join(map(str, opts.gpu))
     os.environ["CUDA_VISIBLE_DEVICES"] = gpus
     model = MultilabelModel(trainmode=False)
-    criterion = nn.CosineEmbeddingLoss(0.1).cuda()
+    criterion = nn.MultiLabelSoftMarginLoss()
 
     test_loader = torch.utils.data.DataLoader(RakutenData(partition='test'), batch_size=opts.batch_size,
                                               shuffle=True, num_workers=opts.workers)

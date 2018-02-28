@@ -59,7 +59,7 @@ class ingr_embed(nn.Module):
     def forward(self, ingr, ingr_ln, is_from_datasetloader=True):
         # ingr_ln = ingr_ln.float().cuda().view(len(ingr), 1)
         emb = self.ingr_model(ingr)
-        return [emb, ingr_ln]
+        return emb
 
 
 class im_ingr_embed(nn.Module):

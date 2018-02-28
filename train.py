@@ -94,7 +94,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
 
         # compute loss
         emb_loss = criterion[0](output[0][0], output[1][0], target)
-        length_loss = criterion[1](output[0][1], output[1][1])
+        length_loss = criterion[1](output[0][1], ingr_ln)
         loss = emb_loss + length_loss * opts.length_weight
         # measure performance and record loss
         loss_counter.add(loss.data[0])
@@ -123,7 +123,9 @@ def val(val_loader, model, criterion):
 
         # compute loss
 
-        loss = criterion[0](output[0], output[1], target)
+        emb_loss = criterion[0](output[0][0], output[1][0], target)
+        length_loss = criterion[1](output[0][1], ingr_ln)
+        loss = emb_loss + length_loss * opts.length_weight
         # measure performance and record loss
         loss_counter.add(loss.data[0])
 

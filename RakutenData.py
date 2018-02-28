@@ -110,8 +110,6 @@ class RakutenData(data.Dataset):
                 ingrs.append(0)
                 validity = False
         ingr_ln = len(ingrs)
-        ingr_ln_tensor = torch.LongTensor(np.zeros(20, dtype=int))
-        ingr_ln_tensor[ingr_ln] = 1
 
         if self.mode == "use":
             if len(ingrs) < 50:
@@ -132,13 +130,13 @@ class RakutenData(data.Dataset):
 
         # output
         if self.partition == "all_valid":
-            return img, ingrs, ingr_ln_tensor, rec_class, self.ids[index], validity
+            return img, ingrs, ingr_ln, rec_class, self.ids[index], validity
         else:
             if validity:
                 target = 1
             else:
                 target = -1
-            return img, ingrs, ingr_ln_tensor, rec_class, recipe_id, target
+            return img, ingrs, ingr_ln, rec_class, recipe_id, target
 
     def __len__(self):
         return len(self.ids)

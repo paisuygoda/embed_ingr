@@ -169,7 +169,7 @@ def switch_optim_lr(optimizer, opts):
         optimizer.param_groups[0]['lr'] = 0.0
 
 def main():
-    if opts.extract_vector:
+    if opts.extract_vector == 1:
         vector_main()
     else:
         multulabel_main()

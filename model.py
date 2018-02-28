@@ -58,11 +58,7 @@ class ingr_embed(nn.Module):
 
     def forward(self, ingr, ingr_ln, is_from_datasetloader=True):
         ingr_ln = ingr_ln.float().cuda().view(len(ingr), 1)
-        for i, single_ingr in enumerate(ingr):
-            if i == 0:
-                emb = norm(self.ingr_model(single_ingr.view(1, opts.numofingr)))
-            else:
-                emb = torch.cat((emb, norm(self.ingr_model(single_ingr.view(1, opts.numofingr)))))
+        emb = self.ingr_model(ingr)
         return [emb, ingr_ln]
 
 

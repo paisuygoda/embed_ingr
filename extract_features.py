@@ -8,6 +8,7 @@ import torch.utils.data
 import torch.utils.data as data
 import numpy as np
 from model import im_ingr_embed
+from model import MultilabelModel
 from RakutenData import RakutenData
 from args import get_parser
 import pickle
@@ -104,7 +105,7 @@ def vector_main():
 def multulabel_main():
     gpus = ','.join(map(str, opts.gpu))
     os.environ["CUDA_VISIBLE_DEVICES"] = gpus
-    model = im_ingr_embed(trainmode=False)
+    model = MultilabelModel(trainmode=False)
     criterion = nn.CosineEmbeddingLoss(0.1).cuda()
 
     test_loader = torch.utils.data.DataLoader(RakutenData(partition='test'), batch_size=opts.batch_size,

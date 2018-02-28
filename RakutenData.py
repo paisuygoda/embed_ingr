@@ -110,7 +110,7 @@ class RakutenData(data.Dataset):
                 ingrs.append(0)
                 validity = False
         ingr_ln = len(ingrs)
-        ingr_ln_tensor = torch.LongTensor(np.zeros(20))
+        ingr_ln_tensor = torch.LongTensor(np.zeros(20, dtype=int))
         ingr_ln_tensor[ingr_ln] = 1
 
         if self.mode == "use":

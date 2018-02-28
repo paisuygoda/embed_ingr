@@ -34,7 +34,7 @@ class im_embed(nn.Module):
         image_model = torch.nn.DataParallel(image_model).cuda()
         self.image_model = image_model
         self.embed = nn.Linear(2048, opts.emb_dim).cuda()
-        self.length = nn.Linear(2048, 1).cuda()
+        self.length = nn.Linear(2048, opts.numofingr).cuda()
 
     def forward(self, data):
         mid_f = self.image_model(data).view(opts.batch_size, 2048)

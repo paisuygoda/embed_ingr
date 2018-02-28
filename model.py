@@ -33,20 +33,25 @@ class im_embed(nn.Module):
         image_model = nn.Sequential(*modules)
         image_model = torch.nn.DataParallel(image_model).cuda()
         self.image_model = image_model
+        self.embed = nn.Linear(2048, opts.emb_dim)
+        self.length = nn.Linear(2048, 1)
 
     def forward(self, data):
-        return self.image_model(data).view(opts.batch_size, 2048)
+        mid_f = self.image_model(data).view(opts.batch_size, 2048)
+        emb = self.embed(mid_f)
+        ingr_length = self.length(mid_f)
+        return [emb, ingr_length]
 
 
 class ingr_embed(nn.Module):
     def __init__(self):
         super(ingr_embed, self).__init__()
         ingr_model = nn.Sequential(
-            nn.Linear(opts.numofingr, 512),
+            nn.Linear(opts.numofingr, 300),
             nn.ReLU(),
-            nn.Linear(512, 1024),
+            nn.Linear(300, 500),
             nn.ReLU(),
-            nn.Linear(1024, 2047),
+            nn.Linear(500, opts.emb_dim),
         )
         ingr_model = torch.nn.DataParallel(ingr_model).cuda()
         self.ingr_model = ingr_model
@@ -58,8 +63,7 @@ class ingr_embed(nn.Module):
                 emb = norm(self.ingr_model(single_ingr.view(1, opts.numofingr)))
             else:
                 emb = torch.cat((emb, norm(self.ingr_model(single_ingr.view(1, opts.numofingr)))))
-        final_emb = torch.cat((ingr_ln.float(), emb), dim=1)
-        return final_emb
+        return [emb, ingr_ln]
 
 
 class im_ingr_embed(nn.Module):

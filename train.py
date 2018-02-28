@@ -18,6 +18,7 @@ opts = parser.parse_args()
 
 torch.cuda.manual_seed(opts.seed)
 
+
 def main():
 
     gpus = ','.join(map(str, opts.gpu))
@@ -28,7 +29,11 @@ def main():
     temp_best_val = float('inf')
     tempfilename = 'snapshots/model_temp.pth.tar'
 
-    criterion = nn.CosineEmbeddingLoss(0.1).cuda()
+    emb_crit = nn.CosineEmbeddingLoss(0.1).cuda()
+    weights_class = torch.Tensor(opts.numClasses).fill_(1)
+    weights_class[0] = 0
+    length_crit = nn.CrossEntropyLoss(weight=weights_class).cuda()
+    criterion = [emb_crit, length_crit]
     optimizer = torch.optim.Adam([
         {'params': model.ingr_model.parameters(), 'lr': opts.lr},
         {'params': model.image_model.parameters(), 'lr': 0.0}])
@@ -68,8 +73,8 @@ def main():
                 torch.save({'epoch': epoch + 1, 'state_dict': model.state_dict(), 'best_val': best_val,
                             'optimizer': optimizer.state_dict()}, filename)
 
-            print('----- Validation: {:.3f} -----'.format(val_loss))
-            print('----- Best Score: {:.3f} (best) -----'.format(best_val))
+            print('----- Validation: {} -----'.format(val_loss))
+            print('----- Best Score: {} (best) -----'.format(best_val))
 
 
 def train(train_loader, model, criterion, optimizer, epoch):
@@ -88,8 +93,9 @@ def train(train_loader, model, criterion, optimizer, epoch):
         output = model(img, ingr, ingr_ln)
 
         # compute loss
-
-        loss = criterion(output[0], output[1], target)
+        emb_loss = criterion[0](output[0][0], output[1][0], target)
+        length_loss = criterion[1](output[0][1], output[1][1])
+        loss = emb_loss + length_loss * opts.length_weight
         # measure performance and record loss
         loss_counter.add(loss.data[0])
 
@@ -117,7 +123,7 @@ def val(val_loader, model, criterion):
 
         # compute loss
 
-        loss = criterion(output[0], output[1], target)
+        loss = criterion[0](output[0], output[1], target)
         # measure performance and record loss
         loss_counter.add(loss.data[0])
 

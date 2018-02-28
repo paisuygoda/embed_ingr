@@ -15,6 +15,8 @@ def get_parser():
     parser.add_argument('--valfreq', default=10, type=int)
     parser.add_argument('--numofingr', default=304, type=int)
     parser.add_argument('--model_path', default="snapshots/best_model.pth.tar")
+    parser.add_argument('--emb_dim', default=300, type=int)
+    parser.add_argument('--length_weight', default=1.0, type=float)
 
     parser.add_argument('--test_full', default=1, type=int)
     parser.add_argument('--extract_vector', default=1, type=int)

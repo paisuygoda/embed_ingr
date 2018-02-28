@@ -76,7 +76,7 @@ def datacheck():
         actual = dataset_dict[recipe_id]
         print("What actually is ...\ningr: ", actual["ingredients"], "\nclass: ", actual["dish_class"])
 
-print("MODE? (1 = datacheck, 2 = image, 3 = pickle, 4 = text, 5 = img separation, \n\t6 = recipe_ingr, 7 = ontrogy)")
+print("MODE? (1 = datacheck, 2 = pickle_fromresult, 3 = pickle, 4 = text, 5 = img separation, \n\t6 = recipe_ingr, 7 = ontrogy)")
 m = input()
 print("PATH?")
 path = input()

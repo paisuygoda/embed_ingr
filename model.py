@@ -76,3 +76,21 @@ class im_ingr_embed(nn.Module):
 
         output = [im_emb, ingr_emb]
         return output
+
+
+class MultilabelModel(nn.Module):
+    def __init__(self):
+        super(MultilabelModel, self).__init__()
+
+        image_model = models.resnet50()
+        image_model.fc = nn.Linear(2048, 469)
+        image_model = torch.nn.DataParallel(image_model).cuda()
+
+        checkpoint = torch.load(
+            "model/ResNet50_469_best.pth.tar")  # FoodLog-finetuned single-class food recognition model
+        image_model.load_state_dict(checkpoint["state_dict"])
+        image_model.module.fc = nn.Linear(2048, opts.numofingr)
+        self.image_model = image_model.cuda()
+
+    def forward(self, data):
+        return self.image_model(data)

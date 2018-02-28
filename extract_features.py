@@ -32,12 +32,11 @@ class IngredientData(data.Dataset):
         return self.numofingr
 
 
-def main():
+def vector_main():
     gpus = ','.join(map(str, opts.gpu))
     os.environ["CUDA_VISIBLE_DEVICES"] = gpus
     model = im_ingr_embed(trainmode=False)
     criterion = nn.CosineEmbeddingLoss(0.1).cuda()
-
 
     test_loader = torch.utils.data.DataLoader(RakutenData(partition='test'), batch_size=opts.batch_size,
                                               shuffle=True, num_workers=opts.workers)
@@ -102,6 +101,53 @@ def main():
     print("Saved individual ingredient features.")
 
 
+def multulabel_main():
+    gpus = ','.join(map(str, opts.gpu))
+    os.environ["CUDA_VISIBLE_DEVICES"] = gpus
+    model = im_ingr_embed(trainmode=False)
+    criterion = nn.CosineEmbeddingLoss(0.1).cuda()
+
+    test_loader = torch.utils.data.DataLoader(RakutenData(partition='test'), batch_size=opts.batch_size,
+                                              shuffle=True, num_workers=opts.workers)
+    checkpoint = torch.load(opts.model_path)
+    model.load_state_dict(checkpoint["state_dict"])
+
+    loss_counter = AvgCount()
+    model.eval()
+    print("model loaded.")
+
+    for i, data in enumerate(test_loader):
+        if len(data[0]) != opts.batch_size:
+            break
+
+        img = torch.autograd.Variable(data[0]).cuda()
+        ingr = torch.autograd.Variable(data[1]).cuda()
+        recipe_id = np.asarray(data[4])
+
+        output = model(img)
+
+        # compute loss
+        loss = criterion(output, ingr)
+        # measure performance and record loss
+        loss_counter.add(loss.data[0])
+
+        if i == 0:
+            labels = output.data.cpu().numpy()
+            recipe_id_list = recipe_id
+        else:
+            labels = np.concatenate((labels, output.data.cpu().numpy()), axis=0)
+            recipe_id_list = np.concatenate((recipe_id_list, recipe_id), axis=0)
+
+    print("Test loss: ", loss_counter.avg)
+
+    with open('results/multilabel_labels.p', 'wb') as f:
+        pickle.dump(labels, f)
+    with open('results/multilabel_recipe_id_list.p', 'wb') as f:
+        pickle.dump(recipe_id_list, f)
+
+    print("Saved img & recipe features.")
+
+
 class AvgCount(object):
     def __init__(self):
         self.avg = 0
@@ -122,6 +168,11 @@ def switch_optim_lr(optimizer, opts):
         optimizer.param_groups[1]['lr'] = opts.lr
         optimizer.param_groups[0]['lr'] = 0.0
 
+def main():
+    if opts.extract_vector:
+        vector_main()
+    else:
+        multulabel_main()
 
 if __name__ == '__main__':
     main()

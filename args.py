@@ -17,5 +17,6 @@ def get_parser():
     parser.add_argument('--model_path', default="snapshots/best_model.pth.tar")
 
     parser.add_argument('--test_full', default=1, type=int)
+    parser.add_argument('--extract_vector', default=True, type=bool)
 
     return parser

@@ -30,7 +30,7 @@ def main():
     tempfilename = 'snapshots/model_temp.pth.tar'
 
     emb_crit = nn.CosineEmbeddingLoss(0.1).cuda()
-    weights_class = torch.Tensor(opts.numClasses).fill_(1)
+    weights_class = torch.Tensor(opts.numofingr).fill_(1)
     weights_class[0] = 0
     length_crit = nn.CrossEntropyLoss(weight=weights_class).cuda()
     criterion = [emb_crit, length_crit]

@@ -62,7 +62,9 @@ def vector_main():
             output = model(img, ingr, ingr_ln)
 
             # compute loss
-            loss = criterion(output[0], output[1], target)
+            emb_loss = criterion[0](output[0][0], output[1], target)
+            length_loss = criterion[1](output[0][1], ingr_ln)
+            loss = emb_loss + length_loss * opts.length_weight
             # measure performance and record loss
             loss_counter.add(loss.data[0])
 

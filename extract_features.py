@@ -37,7 +37,12 @@ def vector_main():
     gpus = ','.join(map(str, opts.gpu))
     os.environ["CUDA_VISIBLE_DEVICES"] = gpus
     model = im_ingr_embed(trainmode=False)
-    criterion = nn.CosineEmbeddingLoss(0.1).cuda()
+    
+    emb_crit = nn.CosineEmbeddingLoss(0.1).cuda()
+    weights_class = torch.Tensor(opts.numofingr).fill_(1)
+    weights_class[0] = 0
+    length_crit = nn.CrossEntropyLoss(weight=weights_class).cuda()
+    criterion = [emb_crit, length_crit]
 
     test_loader = torch.utils.data.DataLoader(RakutenData(partition='test'), batch_size=opts.batch_size,
                                               shuffle=True, num_workers=opts.workers)

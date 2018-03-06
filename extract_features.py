@@ -37,7 +37,7 @@ def vector_main():
     gpus = ','.join(map(str, opts.gpu))
     os.environ["CUDA_VISIBLE_DEVICES"] = gpus
     model = im_ingr_embed(trainmode=False)
-    
+
     emb_crit = nn.CosineEmbeddingLoss(0.1).cuda()
     weights_class = torch.Tensor(opts.numofingr).fill_(1)
     weights_class[0] = 0
@@ -74,12 +74,16 @@ def vector_main():
             loss_counter.add(loss.data[0])
 
             if i==0:
-                img_feature = output[0].data.cpu().numpy()
+                img_feature = output[0][0].data.cpu().numpy()
+                img_ln = output[0][1].data.cpu().numpy()
                 ing_feature = output[1].data.cpu().numpy()
+                ing_ln = ingr_ln.data.cpu().numpy()
                 recipe_id_list = recipe_id
             else:
-                img_feature = np.concatenate((img_feature, output[0].data.cpu().numpy()),axis=0)
+                img_feature = np.concatenate((img_feature, output[0][0].data.cpu().numpy()),axis=0)
+                img_ln = np.concatenate((img_ln, output[0][1].data.cpu().numpy()),axis=0)
                 ing_feature = np.concatenate((ing_feature, output[1].data.cpu().numpy()),axis=0)
+                ing_ln = np.concatenate((ing_ln, ingr_ln.data.cpu().numpy()), axis=0)
                 recipe_id_list = np.concatenate((recipe_id_list, recipe_id), axis=0)
 
         print("Test loss: ", loss_counter.avg)

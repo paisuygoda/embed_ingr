@@ -257,7 +257,7 @@ def major_dish():
             recipe_id += 1
     with open('data/subdata/major_dish.tsv', mode='w') as f:
         for i, k in recipe_class.items():
-            f.write(i,"\t", k,"\n")
+            f.write(i+"\t"+k+"\n")
 
 
 if __name__ == "__main__":

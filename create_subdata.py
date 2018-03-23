@@ -243,8 +243,26 @@ def class_id_set():
     with open('data/subdata/recipe_id2recipe_text.p', mode='wb') as f:
         pickle.dump(id2text, f)
 
+
+def major_dish():
+    recipe_class = {}
+    recipe_id = 1
+    id2text = ["*"]
+    for line in open('data/Rakuten/recipe01_all_20170118.txt', 'r', encoding="utf-8"):
+        linelist = line.split('\t')
+        dish = linelist[9]
+        if dish not in recipe_class:
+            recipe_class[dish] = recipe_id
+            id2text.append(dish)
+            recipe_id += 1
+    with open('data/subdata/major_dish.tsv', mode='w') as f:
+        for i, k in recipe_class.items():
+            f.write(i,"\t", k,"\n")
+
+
 if __name__ == "__main__":
 
+    """
     process_outline()
     process_ingredients()
     combine_outline_ingredients()
@@ -253,3 +271,5 @@ if __name__ == "__main__":
     class_id_set()
     drop_invalid_images()
     img_sep("home/goda/im2ingr/data/images/")
+    """
+    major_dish()

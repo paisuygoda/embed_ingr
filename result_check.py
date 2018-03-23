@@ -160,8 +160,8 @@ def check_feature():
             if dist == 0:
                 query_emb = img_feature[qid]
                 ing_emb = ing_feature[rid]
-                print(query_emb - ing_emb)
-                print("Should be 0\n--------------------")
+                # print(query_emb - ing_emb)
+                # print("Should be 0\n--------------------")
             elif dist == 1:
                 query_emb = img_feature[qid]
                 ing_emb = ing_feature[rid]

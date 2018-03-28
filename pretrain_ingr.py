@@ -62,8 +62,8 @@ def main():
 
 
 def get_distance(base_ingr, ingr):
-    base_ingr = base_ingr.numpy()
-    ingr = ingr.numpy()
+    base_ingr = base_ingr.data.cpu().numpy()
+    ingr = ingr.data.cpu().numpy()
     target = []
     for (b,i) in zip(base_ingr, ingr):
         if np.linalg.norm(b - i) / float(len(ingr)) < 0.2:
@@ -83,7 +83,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         if i == 0:
             base_ingr = torch.autograd.Variable(data[1]).cuda()
             base_ingr_ln = torch.autograd.Variable(data[2]).cuda()
-            base = model(base_ingr, base_ingr_ln)
+            base = model(base_ingr, base_ingr_ln).data
             model.train()
             continue
         sys.stdout.write("\r%d" % i)
@@ -95,7 +95,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         output = model(ingr, ingr_ln)
 
         # compute loss
-        emb_loss = criterion[0](base, output, target)
+        emb_loss = criterion[0](torch.Variable(base), output, target)
         loss = emb_loss
         # measure performance and record loss
         loss_counter.add(loss.data[0])

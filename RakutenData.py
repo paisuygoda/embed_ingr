@@ -18,7 +18,7 @@ opts = parser.parse_args()
 
 class RakutenData(data.Dataset):
     def __init__(self, img_path='/srv/datasets/Rakuten/', data_path='data/subdata/', partition=None,
-                 mode=None, mismatch_rate=0.8):
+                 mode=None, mismatch_rate=0.8, only_major=False):
 
         with open('data/subdata/ingr_id.p','rb') as f:
             self.ingr_id = pickle.load(f)
@@ -38,8 +38,12 @@ class RakutenData(data.Dataset):
             self.ids = pickle.load(f)
 
         self.maxInst = 20
-        with open(os.path.join(data_path,'dataset_dict.p'),'rb') as f:
-            self.dataset_dict = pickle.load(f)
+        if only_major:
+            with open(os.path.join(data_path, 'major_dish_dataset_dict.p'), 'rb') as f:
+                self.dataset_dict = pickle.load(f)
+        else:
+            with open(os.path.join(data_path,'dataset_dict.p'),'rb') as f:
+                self.dataset_dict = pickle.load(f)
         with open(os.path.join(data_path,'recipe_class.p'),'rb') as f:
             self.recipe_class = pickle.load(f)
 

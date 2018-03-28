@@ -100,7 +100,7 @@ with open('data/ontrogy_gyaku_cat.p', mode='wb') as f:
 with open('data/numcount.p', mode='wb') as f:
     pickle.dump(num, f)
 
-with open("data/synonym_edited.tsv", 'w', encoding='utf8') as f:
+with open("data/synonym_edited.txt", 'w', encoding='utf8') as f:
     writer = csv.writer(f, delimiter='\t', lineterminator='\n')
     for k,v in dic_all.items():
         for vk, vv in v.items():

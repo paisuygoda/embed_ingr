@@ -76,7 +76,16 @@ def datacheck():
         actual = dataset_dict[recipe_id]
         print("What actually is ...\ningr: ", actual["ingredients"], "\nclass: ", actual["dish_class"])
 
-print("MODE? (1 = datacheck, 2 = pickle_fromresult, 3 = pickle, 4 = text, 5 = img separation, \n\t6 = recipe_ingr, 7 = ontrogy)")
+
+def get_major_ingr():
+    with open('data/subdata/major_dish_dataset_dict.p', mode='rb') as f:
+        data = pickle.load(f)
+    for i, d in enumerate(data):
+        print(data[d]['ingr'])
+        if i > 10:
+            break
+
+print("MODE? (1 = datacheck, 2 = pickle_fromresult, 3 = pickle, 4 = major_ingr, 5 = img separation, \n\t6 = recipe_ingr, 7 = ontrogy)")
 m = input()
 print("PATH?")
 path = input()
@@ -86,5 +95,7 @@ elif m == "1":
     datacheck()
 elif m == '2':
     look_pickle_r(path)
+elif m == "4":
+    get_major_ingr()
 else:
     print("Bad input mode")

@@ -10,6 +10,7 @@ import torch.backends.cudnn as cudnn
 from model import ingr_embed
 from RakutenData import RakutenData
 from args import get_parser
+import numpy as np
 
 # =============================================================================
 parser = get_parser()
@@ -60,7 +61,17 @@ def main():
             print('----- Best Score: {} (best) -----'.format(best_val))
 
 
-def get_distance():
+def get_distance(base_ingr, ingr):
+    base_ingr = base_ingr.numpy()
+    ingr = ingr.numpy()
+    target = []
+    for (b,i) in zip(base_ingr, ingr):
+        if np.linalg.norm(b - i) / float(len(ingr)) < 0.2:
+            target.append(1)
+        else:
+            target.append(-1)
+    target = torch.autograd.Variable(torch.LongTensor(target).cuda(async=True))
+    return target
 
 
 def train(train_loader, model, criterion, optimizer, epoch):
@@ -79,14 +90,13 @@ def train(train_loader, model, criterion, optimizer, epoch):
 
         ingr = torch.autograd.Variable(data[1]).cuda()
         ingr_ln = torch.autograd.Variable(data[2]).cuda()
-        target = torch.autograd.Variable(data[5].cuda(async=True))
+        target = get_distance(base_ingr, ingr)
 
         output = model(ingr, ingr_ln)
 
         # compute loss
-        emb_loss = criterion[0](output[0][0], output[1], target)
-        length_loss = criterion[1](output[0][1], ingr_ln)
-        loss = emb_loss + length_loss * opts.length_weight
+        emb_loss = criterion[0](base, output, target)
+        loss = emb_loss
         # measure performance and record loss
         loss_counter.add(loss.data[0])
 
@@ -101,21 +111,25 @@ def train(train_loader, model, criterion, optimizer, epoch):
 def val(val_loader, model, criterion):
     loss_counter = AvgCount()
     model.eval()
-    for data in val_loader:
+    for i, data in enumerate(val_loader):
         if len(data[0]) != opts.batch_size:
             break
-
+        if i == 0:
+            base_ingr = torch.autograd.Variable(data[1]).cuda()
+            base_ingr_ln = torch.autograd.Variable(data[2]).cuda()
+            base = model(base_ingr, base_ingr_ln)
+            model.train()
+            continue
         ingr = torch.autograd.Variable(data[1]).cuda()
         ingr_ln = torch.autograd.Variable(data[2]).cuda()
-        target = torch.autograd.Variable(data[5].cuda(async=True))
+        target = get_distance(base_ingr, ingr)
 
         output = model(ingr, ingr_ln)
 
         # compute loss
 
-        emb_loss = criterion[0](output[0][0], output[1], target)
-        length_loss = criterion[1](output[0][1], ingr_ln)
-        loss = emb_loss + length_loss * opts.length_weight
+        emb_loss = criterion[0](base, output[1], target)
+        loss = emb_loss
         # measure performance and record loss
         loss_counter.add(loss.data[0])
 

@@ -80,7 +80,7 @@ def datacheck():
     train_loader = torch.utils.data.DataLoader(RakutenData(partition='train'),
                                                batch_size=30, shuffle=True)
     for i, data in enumerate(train_loader):
-        if i > 10:
+        if i > 1:
             break
         print(data[1])
         print(type(data[1]))

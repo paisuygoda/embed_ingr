@@ -60,12 +60,21 @@ def main():
             print('----- Best Score: {} (best) -----'.format(best_val))
 
 
+def get_distance():
+
+
 def train(train_loader, model, criterion, optimizer, epoch):
     loss_counter = AvgCount()
-    model.train()
+    model.eval()
     for i, data in enumerate(train_loader):
         if len(data[0]) != opts.batch_size:
             break
+        if i == 0:
+            base_ingr = torch.autograd.Variable(data[1]).cuda()
+            base_ingr_ln = torch.autograd.Variable(data[2]).cuda()
+            base = model(base_ingr, base_ingr_ln)
+            model.train()
+            continue
         sys.stdout.write("\r%d" % i)
 
         ingr = torch.autograd.Variable(data[1]).cuda()

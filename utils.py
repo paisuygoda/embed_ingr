@@ -2,6 +2,7 @@ import pickle
 from RakutenData import RakutenData
 import sys
 import numpy as np
+import torch
 
 """
 sys.stdin =  open('/dev/stdin',  'r', encoding='UTF-8')
@@ -75,6 +76,16 @@ def datacheck():
         print("\nWhat you got...\ningr: ", ingr, "\nclass: ", rec_class)
         actual = dataset_dict[recipe_id]
         print("What actually is ...\ningr: ", actual["ingredients"], "\nclass: ", actual["dish_class"])
+
+    train_loader = torch.utils.data.DataLoader(RakutenData(partition='train'),
+                                               batch_size=30, shuffle=True)
+    for i, data in enumerate(train_loader):
+        if i > 10:
+            break
+        print(data[1])
+        print(type(data[1]))
+        print(data[5])
+        print(type(data[5]))
 
 
 def get_major_ingr():

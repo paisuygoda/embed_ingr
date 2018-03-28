@@ -95,7 +95,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         output = model(ingr, ingr_ln)
 
         # compute loss
-        emb_loss = criterion[0](torch.Variable(base), output, target)
+        emb_loss = criterion[0](torch.autograd.Variable(base), output, target)
         loss = emb_loss
         # measure performance and record loss
         loss_counter.add(loss.data[0])

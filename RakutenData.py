@@ -95,9 +95,12 @@ class RakutenData(data.Dataset):
         # ingredients
         ingrs = []
         try:
-            l = self.dataset_dict[recipe_id]['ingredients']
+            l = self.dataset_dict[recipe_id]['ingr']
         except:
-            l = []
+            try:
+                l = self.dataset_dict[recipe_id]['ingredients']
+            except:
+                l = []
         if len(l) is 0:
             l = ['*']
             validity = False
@@ -127,7 +130,7 @@ class RakutenData(data.Dataset):
             ingrs = torch.FloatTensor(input_label)
 
         try:
-            rec_class = self.recipe_class[self.dataset_dict[recipe_id]['dish_class']]
+            rec_class = self.recipe_class[self.dataset_dict[recipe_id]['dish']]
         except:
             rec_class = 0
             validity = False
